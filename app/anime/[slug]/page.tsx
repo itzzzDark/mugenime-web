@@ -214,7 +214,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                   />
                   <InfoRow
                     icon={<Layers className="w-4 h-4" />}
-                    label="Eps"
+                    label="Episode"
                     value={anime.episodes ?? `${episodeLists.length}`}
                   />
                   <InfoRow

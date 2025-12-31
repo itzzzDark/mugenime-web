@@ -34,23 +34,23 @@ export default async function HomePage() {
   const announcementList = [
     {
       id: 1,
-      icon: Info,
-      title: "Komentar Segera Hadir",
-      content: "Fitur diskusi antar wibu sedang dibangun. Stay tune!",
-      theme: "blue",
-    },
-    {
-      id: 2,
       icon: ServerCrash,
       title: "Info Player Stream",
       content: "Jika player Pixeldrain error, gunakan opsi server lain.",
       theme: "red",
     },
+    {
+      id: 2,
+      icon: Info,
+      title: "Komentar Segera Hadir",
+      content: "Fitur komentar sedang dibangun. Stay tune!",
+      theme: "blue",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 pb-20 selection:bg-indigo-500/30">
-      {/* --- 1. CINEMATIC HERO SECTION --- */}
+      {/* --- 1. HERO SECTION --- */}
       {heroAnime && (
         <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-zinc-900">
           {/* Background Layer with Blur & Dim */}
@@ -164,8 +164,8 @@ export default async function HomePage() {
 
       {/* --- 2. ANNOUNCEMENT & CONTENT --- */}
       <div className="container mx-auto px-4 -mt-10 relative z-20 space-y-16">
-        {/* Announcement Grid */}
-        <div className="grid md:grid-cols-2 gap-4">
+        {/* Announcement Section */}
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 w-full">
           {announcementList.map((item) => {
             const Icon = item.icon;
             const isAlert = item.theme === "red";
@@ -174,45 +174,53 @@ export default async function HomePage() {
               <div
                 key={item.id}
                 className={`
-                  flex items-start gap-4 p-5 rounded-2xl border backdrop-blur-md shadow-lg transition-all hover:-translate-y-1
+                  relative group flex-1 overflow-hidden rounded-xl border p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1
                   ${
                     isAlert
-                      ? "bg-red-50/90 dark:bg-red-950/40 border-red-100 dark:border-red-900/50"
-                      : "bg-white/90 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800"
+                      ? "bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900 border-l-4 border-l-red-500"
+                      : "bg-white/60 dark:bg-zinc-900/40 border-indigo-200 dark:border-indigo-900 border-l-4 border-l-indigo-500"
                   }
+                  backdrop-blur-md
                 `}
               >
-                <div
-                  className={`
-                  p-3 rounded-xl shrink-0
-                  ${
-                    isAlert
-                      ? "bg-red-100 dark:bg-red-900/50 text-red-600"
-                      : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                  }
-                `}
-                >
-                  <Icon className="w-6 h-6" />
+                {/* Background Watermark Icon */}
+                <div className="absolute -right-6 -top-6 text-current opacity-5 dark:opacity-[0.03] group-hover:scale-110 transition-transform duration-500 rotate-12">
+                  <Icon
+                    className={`w-32 h-32 ${
+                      isAlert ? "text-red-500" : "text-indigo-500"
+                    }`}
+                  />
                 </div>
-                <div>
-                  <h3
-                    className={`font-bold text-base mb-1 ${
-                      isAlert
-                        ? "text-red-700 dark:text-red-200"
-                        : "text-zinc-900 dark:text-zinc-100"
-                    }`}
+
+                <div className="relative z-10 flex items-start gap-4">
+                  {/* Icon Badge */}
+                  <div
+                    className={`
+                      p-3 rounded-full shrink-0 shadow-sm ring-1 ring-inset
+                      ${
+                        isAlert
+                          ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-200 dark:ring-red-800"
+                          : "bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 ring-indigo-200 dark:ring-indigo-800"
+                      }
+                    `}
                   >
-                    {item.title}
-                  </h3>
-                  <p
-                    className={`text-sm leading-relaxed ${
-                      isAlert
-                        ? "text-red-600/80 dark:text-red-200/70"
-                        : "text-zinc-500 dark:text-zinc-400"
-                    }`}
-                  >
-                    {item.content}
-                  </p>
+                    <Icon className={`w-5 h-5 ${isAlert && "animate-pulse"}`} />
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+                      {item.title}
+                      {isAlert && (
+                        <span className="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/50 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/10">
+                          Penting
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-full">
+                      {item.content}
+                    </p>
+                  </div>
                 </div>
               </div>
             );
