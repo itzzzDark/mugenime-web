@@ -122,12 +122,12 @@ export default async function JadwalPage() {
         <Tabs defaultValue={defaultTab} className="w-full space-y-8">
           {/* TABS NAVIGATION (Scrollable on mobile) */}
           <div className="sticky top-16 z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md py-2 -mx-4 px-4 md:mx-0 md:px-0 md:static md:bg-transparent md:backdrop-blur-none">
-            <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 no-scrollbar">
+            <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 no-scrollbar gap-x-1">
               {scheduleData.map((item) => (
                 <TabsTrigger
                   key={item.day}
                   value={item.day}
-                  className="px-6 py-2.5 min-w-[100px] text-sm font-medium data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all"
+                  className="px-6 py-2.5 min-w-[100px] text-sm font-medium data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all cursor-pointer hover:bg-indigo-600/5"
                 >
                   {item.day}
                 </TabsTrigger>

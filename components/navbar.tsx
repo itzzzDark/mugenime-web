@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Menu,
-  Search,
   Home,
   Calendar,
   Zap,
@@ -24,8 +23,8 @@ import {
 import { cn } from "@/lib/utils";
 import SearchInput from "./searchInput";
 import Image from "next/image";
+import { motion } from "motion/react";
 
-// Define menu items with icons for the mobile drawer
 const navLinks = [
   { name: "Beranda", href: "/", icon: Home },
   { name: "Jadwal", href: "/jadwal-anime", icon: Calendar },
@@ -36,30 +35,18 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const pathname = usePathname();
-
-  // Detect scroll to toggle navbar style
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out border-b",
-        isScrolled
-          ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-zinc-200 dark:border-zinc-800 shadow-xs"
-          : "bg-transparent border-transparent"
+        "sticky top-0 z-50 w-full border-b",
+        "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-zinc-200 dark:border-zinc-800 shadow-sm"
       )}
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        
         {/* --- 1. LOGO SECTION --- */}
         <Link
           href="/"
@@ -78,37 +65,67 @@ export default function Navbar() {
         </Link>
 
         {/* --- 2. DESKTOP NAVIGATION --- */}
-        <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md">
+        <nav
+          className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md"
+          onMouseLeave={() => setHoveredPath(null)} // Reset saat mouse keluar navbar
+        >
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
+            
+            // Logika Pill:
+            // Tampilkan Pill di item ini JIKA:
+            // 1. Item ini sedang di-HOVER (prioritas utama)
+            // 2. ATAU, tidak ada yang di-hover, tapi item ini sedang ACTIVE (prioritas kedua)
+            const showPill = hoveredPath === link.href || (isActive && hoveredPath === null);
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                onMouseEnter={() => setHoveredPath(link.href)}
                 className={cn(
-                  "relative px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-300",
-                  isActive
-                    ? "text-indigo-600 dark:text-indigo-400 bg-white dark:bg-zinc-800 shadow-sm"
-                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
+                  "relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200",
+                  "z-10" // Pastikan link berada di atas pill secara stacking context
                 )}
               >
-                {link.name}
+                {/* Background Sliding Animation (Pill) */}
+                {showPill && (
+                  <motion.div
+                    layoutId="navbar-pill" // ID yang sama membuat animasi 'loncat' antar elemen
+                    className="absolute inset-0 bg-indigo-600 rounded-full -z-10"
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  />
+                )}
+
+                {/* Text Content */}
+                <span
+                  className={cn(
+                    "relative z-20 transition-colors duration-200",
+                    // Jika pill ada di sini (baik karena hover atau active), text jadi putih
+                    showPill
+                      ? "text-white"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  )}
+                >
+                  {link.name}
+                </span>
+                
+                {/* Indikator titik telah dihapus sesuai permintaan */}
               </Link>
             );
           })}
         </nav>
 
-        {/* --- 3. ACTIONS (Search & Mobile Menu) --- */}
+        {/* --- 3. ACTIONS --- */}
         <div className="flex items-center gap-2 flex-1 justify-end">
-          {/* Desktop Search */}
           <div className="hidden md:block w-full max-w-[260px] lg:max-w-[300px] transition-all focus-within:max-w-[320px]">
             <SearchInput />
           </div>
 
-          {/* Mobile Search Icon Trigger (Optional if you want to save space on mobile) */}
-          {/* You can implement a toggle search view for mobile here later */}
-
-          {/* Mobile Menu Trigger (Sheet) */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button
@@ -120,22 +137,24 @@ export default function Navbar() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            
-            <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0 border-l-zinc-200 dark:border-l-zinc-800">
+
+            <SheetContent
+              side="right"
+              className="w-[85vw] sm:w-[380px] p-0 border-l-zinc-200 dark:border-l-zinc-800"
+            >
               <SheetHeader className="p-6 border-b border-zinc-100 dark:border-zinc-800 text-left">
-                 <div className="relative h-8 w-32">
-                    <Image
-                      src="/assets/logo.png"
-                      alt="Mugenime Logo"
-                      fill
-                      className="object-contain object-left"
-                    />
-                  </div>
+                <div className="relative h-8 w-32">
+                  <Image
+                    src="/assets/logo.png"
+                    alt="Mugenime Logo"
+                    fill
+                    className="object-contain object-left"
+                  />
+                </div>
                 <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
               </SheetHeader>
 
               <div className="flex flex-col h-full overflow-y-auto">
-                {/* Mobile Search Area */}
                 <div className="p-6 pb-2">
                   <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
                     Pencarian
@@ -143,16 +162,15 @@ export default function Navbar() {
                   <SearchInput onSearchSubmit={() => setIsOpen(false)} />
                 </div>
 
-                {/* Mobile Links */}
                 <div className="p-6 space-y-1">
                   <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
                     Menu Utama
                   </h4>
                   {navLinks.map((link) => {
-                     const Icon = link.icon;
-                     const isActive = pathname === link.href;
-                     
-                     return (
+                    const Icon = link.icon;
+                    const isActive = pathname === link.href;
+
+                    return (
                       <Link
                         key={link.href}
                         href={link.href}
@@ -164,21 +182,20 @@ export default function Navbar() {
                             : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
                         )}
                       >
-                        <div className={cn(
+                        <div
+                          className={cn(
                             "p-2 rounded-lg transition-colors",
-                            isActive 
-                                ? "bg-indigo-100 dark:bg-indigo-500/20" 
-                                : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-white dark:group-hover:bg-zinc-700 shadow-xs"
-                        )}>
-                            <Icon className="w-4.5 h-4.5" />
+                            isActive
+                              ? "bg-indigo-100 dark:bg-indigo-500/20"
+                              : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-white dark:group-hover:bg-zinc-700 shadow-xs"
+                          )}
+                        >
+                          <Icon className="w-4.5 h-4.5" />
                         </div>
                         {link.name}
-                        
-                        {isActive && (
-                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600 shadow-[0_0_8px_rgba(79,70,229,0.5)]" />
-                        )}
+                        {/* Mobile tidak pakai sliding pill, jadi indikator dot/border opsional jika mau */}
                       </Link>
-                     )
+                    );
                   })}
                 </div>
               </div>
