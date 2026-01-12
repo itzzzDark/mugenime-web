@@ -28,7 +28,7 @@ export default async function WatchPage({ params }: Props) {
 
   let episodeData: EpisodeDetail | null = null;
   let animeData: AnimeDetail | null = null;
-  let batchData: BatchResponse | null = null; // Tambahkan variabel batch
+  let batchData: BatchResponse | null = null;
 
   try {
     // 1. Fetch Data Episode
@@ -39,7 +39,6 @@ export default async function WatchPage({ params }: Props) {
       animeData = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
 
       // 3. Fetch Batch (Jika ada batchId di animeDetail)
-      // Logika dipindah ke Server Side agar lebih stabil
       if (animeData?.batch?.batchId) {
         try {
           batchData = await fetchAnime<BatchResponse>(
@@ -49,7 +48,6 @@ export default async function WatchPage({ params }: Props) {
           console.warn("[WatchPage] Gagal fetch batch:", batchErr);
         }
       }
-
     } catch (err) {
       console.warn(`[Sidebar Info] Gagal fetch detail anime: ${slug}`, err);
     }
@@ -63,16 +61,14 @@ export default async function WatchPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen pb-20 pt-8 bg-white dark:bg-zinc-950">
-      <div className="container mx-auto px-4">
-        <WatchView
-          episode={episodeData}
-          animeDetail={animeData}
-          batchData={batchData} // Lempar data batch ke Client Component
-          slug={slug}
-          episodeSlug={episodeSlug}
-        />
-      </div>
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
+      <WatchView
+        episode={episodeData}
+        animeDetail={animeData}
+        batchData={batchData}
+        slug={slug}
+        episodeSlug={episodeSlug}
+      />
     </div>
   );
 }

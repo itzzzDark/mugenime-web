@@ -78,7 +78,7 @@ export default function AnimeCard({ anime, index = 0 }: Readonly<AnimeCardProps>
             )}
 
             <Badge className="bg-indigo-600/90 backdrop-blur-sm text-white border-0 px-2.5 h-6 text-[11px] shadow-lg shadow-indigo-900/20">
-              Ep {anime.episodes}
+              Episode {anime.episodes}
             </Badge>
           </div>
 
