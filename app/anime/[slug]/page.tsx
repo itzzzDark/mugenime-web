@@ -17,6 +17,7 @@ import {
   Users,
   Film,
   Bookmark,
+  Tags,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,22 +59,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const responseData = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
     if (!isAnimeDetail(responseData)) return { title: "Anime Not Found" };
+
     const anime = responseData;
     const synopsisText = getSynopsisText(anime.synopsis);
+    const title = `Nonton ${anime.title} Sub Indo Gratis - Mugenime`;
+    const description = `Streaming anime ${anime.title} Subtitle Indonesia gratis resolusi 1080p, 720p, 480p. Download ${anime.title} sub indo lengkap di Mugenime.`;
+
     return {
-      title: `${anime.title} - Mugenime`,
-      description: synopsisText
-        ? synopsisText.slice(0, 150) + "..."
-        : "Nonton anime sub indo gratis.",
-      openGraph: { images: [getProxyUrl(anime.poster)] },
+      title: title,
+      description: description,
+      alternates: {
+        canonical: `/anime/${slug}`,
+      },
+      openGraph: {
+        title: title,
+        description: description,
+        images: [getProxyUrl(anime.poster)],
+        type: "video.tv_show",
+        siteName: "Mugenime",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: title,
+        description: description,
+        images: [getProxyUrl(anime.poster)],
+      },
     };
   } catch (e) {
     console.error(e);
     return { title: "Anime Not Found - Mugenime" };
   }
 }
-
-// --- MAIN PAGE COMPONENT ---
 
 export default async function AnimeDetailPage({ params }: Readonly<Props>) {
   const { slug } = await params;
@@ -93,7 +109,6 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
   const anime = responseData;
   const synopsisText = getSynopsisText(anime.synopsis);
 
-  // Batch Data Logic
   let batchData: BatchResponse | null = null;
   if (anime.batch?.batchId) {
     try {
@@ -109,8 +124,35 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
   const firstEpisode = episodeLists.length > 0 ? episodeLists.at(-1) : null;
   const genres = anime.genreList || [];
 
+  const genreString = genres.map((g) => g.title).join(", ");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    name: anime.title,
+    image: getProxyUrl(anime.poster),
+    description: synopsisText,
+    numberOfEpisodes: anime.episodes || episodeLists.length.toString(),
+    genre: genreString,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: anime.score && anime.score !== "N/A" ? anime.score : "0",
+      bestRating: "10",
+      ratingCount: "100",
+    },
+    potentialAction: {
+      "@type": "WatchAction",
+      target: `https://www.mugenime.my.id/anime/${slug}`,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* --- 1. HERO BACKGROUND (Immersive) --- */}
       <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
         {/* Background Image */}
@@ -232,8 +274,6 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                     label="Studio"
                     value={anime.studios}
                   />
-
-                  {/* --- TAMBAHAN PRODUCERS --- */}
                   <InfoRow
                     icon={<Film className="w-4 h-4" />}
                     label="Produser"
@@ -252,7 +292,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                 {anime.title}
               </h1>
 
-              {/* --- TAMBAHAN JAPANESE TITLE --- */}
+              {/* --- JAPANESE TITLE --- */}
               {anime.japanese && (
                 <p className="text-lg text-zinc-500 dark:text-zinc-400 font-medium font-serif italic">
                   {anime.japanese}
@@ -360,8 +400,39 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
               </div>
             )}
 
+            <div className="bg-zinc-50 dark:bg-zinc-900/40 rounded-xl p-6 border border-zinc-200 dark:border-zinc-800 space-y-4">
+              <div className="space-y-2">
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <Tags className="w-4 h-4 text-indigo-500" />
+                  Nonton {anime.title} Sub Indo Gratis
+                </h2>
+                <div className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify">
+                  Nonton streaming anime <b>{anime.title}</b> Subtitle Indonesia
+                  terlengkap dan terbaru di Mugenime. Kamu bisa download{" "}
+                  <b>{anime.title}</b> sub indo dengan kualitas HD 720p, 1080p,
+                  hingga paket hemat 360p dan 480p. Tersedia format MP4 dan MKV
+                  yang bisa diakses gratis. Jangan lupa tonton juga anime dari
+                  studio {anime.studios} dan genre {genreString} lainnya hanya
+                  disini.
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-normal">
+                  <span className="font-bold text-zinc-500 dark:text-zinc-400">
+                    Keywords:{" "}
+                  </span>
+                  Nonton {anime.title}, Streaming {anime.title} Sub Indo,
+                  Download {anime.title} Subtitle Indonesia,
+                  {anime.title} Episode Terakhir, {anime.title} Batch Sub Indo,{" "}
+                  {anime.title} 360p 480p 720p 1080p, Streaming Anime Sub Indo
+                  Gratis.
+                </p>
+              </div>
+            </div>
+
             {/* Comments */}
-            <div className="pt-8">
+            <div className="pt-2">
               <CommentSection />
             </div>
           </div>
@@ -370,8 +441,6 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
     </div>
   );
 }
-
-// --- SUB COMPONENTS ---
 
 function InfoRow({
   icon,

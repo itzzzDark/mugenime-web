@@ -23,6 +23,15 @@ export const metadata: Metadata = {
   title: "Mugenime - Nonton Anime Subtitle Indonesia Gratis",
   description:
     "Nonton anime subtitle Indonesia terbaru dan terlengkap secara gratis di Mugenime. Streaming anime favoritmu dengan kualitas HD tanpa iklan mengganggu.",
+  icons: {
+    icon: ["app/icon.png"],
+    apple: ["app/icon.png"],
+    shortcut: ["app/favicon.ico"],
+  },
+  metadataBase: new URL("https://www.mugenime.my.id"),
+  alternates: {
+    canonical: "./",
+  },
 };
 
 export default function RootLayout({
