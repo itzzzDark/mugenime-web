@@ -133,7 +133,11 @@ Keterangan Tambahan: [Jelaskan detailnya]
 
           {/* --- KOLOM KANAN: KOMENTAR (COMPONENT) --- */}
           <div className="lg:col-span-5 h-full">
-            <CommentSection />
+            <CommentSection
+              identifier="report-page-discussion"
+              title="Lapor Masalah"
+              slug="report"
+            />
           </div>
         </div>
       </div>
