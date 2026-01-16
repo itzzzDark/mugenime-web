@@ -138,7 +138,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
       "@type": "AggregateRating",
       ratingValue: anime.score && anime.score !== "N/A" ? anime.score : "0",
       bestRating: "10",
-      ratingCount: "100",
+      // ratingCount: "100",
     },
     potentialAction: {
       "@type": "WatchAction",
