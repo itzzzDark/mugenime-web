@@ -31,8 +31,8 @@ Keterangan Tambahan: [Jelaskan detailnya]
 
   return (
     <div className="min-h-screen pb-20 py-10 bg-white dark:bg-zinc-950">
-      <div className="container mx-auto px-4 space-y-10 max-w-6xl">
-        {/* HEADER (Tetap sama) */}
+      <div className="container mx-auto px-4 space-y-10 max-w-5xl">
+        {/* --- HEADER --- */}
         <div className="relative rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 md:p-10 shadow-sm overflow-hidden group">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
           <div className="absolute -top-20 -right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -52,93 +52,90 @@ Keterangan Tambahan: [Jelaskan detailnya]
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* KOLOM KIRI: GUIDE (Tetap sama) */}
-          <div className="lg:col-span-7 space-y-8">
-            <Card className="border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Info className="w-5 h-5 text-indigo-600" />
-                  Cara Melapor
-                </CardTitle>
-                <CardDescription>
-                  Ikuti panduan berikut agar laporanmu cepat diproses admin.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
-                <ul className="list-disc list-inside space-y-2 ml-1">
-                  <li>
-                    Pastikan koneksi internet kamu stabil sebelum melapor.
-                  </li>
-                  <li>
-                    Coba refresh halaman atau gunakan <b>Browser Lain</b>{" "}
-                    (Chrome/Firefox).
-                  </li>
-                  <li>
-                    Gunakan fitur <b>&quot;Buka Tab Baru&quot;</b> di player
-                    jika video tidak muncul (masalah sandbox).
-                  </li>
-                  <li>Jangan spam komentar yang sama berulang kali.</li>
-                  <li>Gunakan bahasa yang sopan dan jelas.</li>
-                </ul>
-                <Alert className="bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900 mt-4">
-                  <HelpCircle className="h-4 w-4 text-indigo-600" />
-                  <AlertTitle className="text-indigo-800 dark:text-indigo-400 font-bold">
-                    Catatan
-                  </AlertTitle>
-                  <AlertDescription className="text-indigo-700/80 dark:text-indigo-400/80 text-xs">
-                    Laporan &quot;Batch&quot; yang error mungkin membutuhkan
-                    waktu lebih lama untuk diperbaiki karena ukuran file yang
-                    besar.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+        {/* --- BAGIAN 1: PANDUAN & TEMPLATE (Grid Side-by-Side) --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card Kiri: Cara Melapor */}
+          <Card className="border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Info className="w-5 h-5 text-indigo-600" />
+                Cara Melapor
+              </CardTitle>
+              <CardDescription>
+                Ikuti panduan berikut agar laporanmu cepat diproses admin.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <ul className="list-disc list-inside space-y-2 ml-1">
+                <li>Pastikan koneksi internet kamu stabil.</li>
+                <li>
+                  Coba refresh atau gunakan <b>Browser Lain</b>.
+                </li>
+                <li>
+                  Gunakan fitur <b>&quot;Buka Tab Baru&quot;</b> jika player
+                  error.
+                </li>
+                <li>Jangan spam komentar berulang.</li>
+                <li>Gunakan bahasa yang sopan.</li>
+              </ul>
+              <Alert className="bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900 mt-4">
+                <HelpCircle className="h-4 w-4 text-indigo-600" />
+                <AlertTitle className="text-indigo-800 dark:text-indigo-400 font-bold">
+                  Catatan
+                </AlertTitle>
+                <AlertDescription className="text-indigo-700/80 dark:text-indigo-400/80 text-xs">
+                  Laporan &quot;Batch&quot; error mungkin butuh waktu lebih lama
+                  untuk diperbaiki.
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
 
-            <Card className="border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold flex justify-between items-center">
-                  <span>Template Laporan</span>
-                  <Button
-                    size="sm"
-                    variant={copied ? "default" : "outline"}
-                    className={
-                      copied ? "bg-green-600 hover:bg-green-700 text-white" : ""
-                    }
-                    onClick={handleCopy}
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-3 h-3 mr-2" /> Disalin
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3 h-3 mr-2" /> Salin Template
-                      </>
-                    )}
-                  </Button>
-                </CardTitle>
-                <CardDescription>
-                  Gunakan format ini di kolom komentar agar kami mudah
-                  mengidentifikasi masalah.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-zinc-100 dark:bg-zinc-900 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 font-mono text-xs md:text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed">
-                  {templateText}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Card Kanan: Template */}
+          <Card className="border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 h-full flex flex-col">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold flex justify-between items-center">
+                <span>Template Laporan</span>
+                <Button
+                  size="sm"
+                  variant={copied ? "default" : "outline"}
+                  className={
+                    copied
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-white dark:bg-zinc-900"
+                  }
+                  onClick={handleCopy}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3 h-3 mr-2" /> Disalin
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3 mr-2" /> Salin
+                    </>
+                  )}
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Gunakan format ini agar mudah diidentifikasi.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="bg-zinc-100 dark:bg-zinc-900 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 font-mono text-xs md:text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed h-full">
+                {templateText}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* --- KOLOM KANAN: KOMENTAR (COMPONENT) --- */}
-          <div className="lg:col-span-5 h-full">
-            <CommentSection
-              identifier="report-page-discussion"
-              title="Lapor Masalah"
-              slug="report"
-            />
-          </div>
+        {/* --- BAGIAN 2: KOMENTAR (FULL WIDTH DI BAWAH) --- */}
+        <div className="w-full">
+          <CommentSection
+            identifier="report-problem"
+            title="Lapor Masalah"
+            type="page"
+          />
         </div>
       </div>
     </div>

@@ -594,7 +594,7 @@ export default function WatchView({
         <CommentSection
           identifier={episodeSlug}
           title={`${animeDetail?.title} - ${episode.title}`}
-          slug={`watch/${slug}/${episodeSlug}`}
+          type="episode"
         />
       </div>
     </div>
