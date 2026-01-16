@@ -587,10 +587,6 @@ export default function WatchView({
 
       {/* 4. Comments */}
       <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800">
-        <h3 className="font-bold text-xl mb-6 text-zinc-800 flex items-center gap-2">
-          <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
-          Komentar
-        </h3>
         <CommentSection
           identifier={episodeSlug}
           title={`${animeDetail?.title} - ${episode.title}`}

@@ -1,22 +1,24 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-// Tipe data sederhana untuk Anime yang disimpan
+// Tipe data untuk Anime yang disimpan
 export interface AnimeItem {
   title: string;
   slug: string;
   poster: string;
-  currentEpisode?: string; // Untuk history: episode terakhir ditonton
-  lastWatchedAt?: number; // Timestamp
+  type?: string;
   url?: string;
+  rating?: string;
+  currentEpisode?: string;
+  lastWatchedAt?: number;
+  studios?: string;
 }
 
 interface AppState {
-  // --- States ---
   bookmarks: AnimeItem[];
   watchHistory: AnimeItem[];
 
-  // --- Actions ---
+  // Actions
   addBookmark: (anime: AnimeItem) => void;
   removeBookmark: (slug: string) => void;
   isBookmarked: (slug: string) => boolean;
@@ -48,22 +50,17 @@ export const useStore = create<AppState>()(
 
       // --- History Logic ---
       addToHistory: (anime) => set((state) => {
-        // Hapus entri lama jika anime yang sama ditonton lagi (biar naik ke paling atas)
         const filteredHistory = state.watchHistory.filter((item) => item.slug !== anime.slug);
-        
-        // Tambahkan timestamp
         const newEntry = { ...anime, lastWatchedAt: Date.now() };
-        
-        // Simpan max 50 history saja biar storage tidak penuh
         return { watchHistory: [newEntry, ...filteredHistory].slice(0, 50) };
       }),
 
       clearHistory: () => set({ watchHistory: [] }),
     }),
     {
-      name: 'mugenime-storage', // Nama key di Local Storage
-      storage: createJSONStorage(() => localStorage), // Simpan di browser
-      skipHydration: true, // Penting untuk Next.js agar tidak error Hydration mismatch
+      name: 'mugenime-storage',
+      storage: createJSONStorage(() => localStorage),
+      skipHydration: true, 
     }
   )
 );

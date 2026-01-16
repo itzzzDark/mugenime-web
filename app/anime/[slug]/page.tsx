@@ -12,11 +12,9 @@ import {
   Calendar,
   Clock,
   Layers,
-  Share2,
   Tv,
   Users,
   Film,
-  Bookmark,
   Tags,
 } from "lucide-react";
 import Image from "next/image";
@@ -25,6 +23,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import BatchDownload from "@/components/batchDownload";
 import CommentSection from "@/components/commentSection";
+import ShareButton from "@/components/shareButton";
+import BookmarkButton from "@/components/bookmarkButton";
 
 export const revalidate = 3600;
 
@@ -61,7 +61,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!isAnimeDetail(responseData)) return { title: "Anime Not Found" };
 
     const anime = responseData;
-    const synopsisText = getSynopsisText(anime.synopsis);
     const title = `Nonton ${anime.title} Sub Indo Gratis - Mugenime`;
     const description = `Streaming anime ${anime.title} Subtitle Indonesia gratis resolusi 1080p, 720p, 480p. Download ${anime.title} sub indo lengkap di Mugenime.`;
 
@@ -146,6 +145,15 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
     },
   };
 
+  const animeData = {
+    title: anime.title,
+    slug: slug,
+    poster: anime.poster,
+    type: anime.type,
+    rating: anime.score,
+    studios: anime.studios,
+};
+
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 pb-20">
       <script
@@ -225,20 +233,10 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
 
                 {/* Secondary Actions Row */}
                 <div className="grid grid-cols-2 gap-3">
-                  {/* Dummy Share Button */}
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" /> Bagikan
-                  </Button>
-                  {/* Dummy Bookmark */}
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-                  >
-                    <Bookmark className="w-4 h-4 mr-2" /> Simpan
-                  </Button>
+                  {/* Share Button */}
+                  <ShareButton title={anime.title} slug={slug} />
+                  {/* Bookmark Button */}
+                  <BookmarkButton data={animeData} />
                 </div>
               </div>
 

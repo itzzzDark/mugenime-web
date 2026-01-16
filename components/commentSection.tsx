@@ -169,7 +169,7 @@ export default function CommentSection({
             reactionsEnabled="1"
             emitMetadata="0"
             inputPosition="top"
-            theme="light" // Bisa diganti "preferred_color_scheme" agar auto dark mode
+            theme="light"
             lang="id"
             loading="lazy"
           />

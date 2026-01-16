@@ -11,6 +11,7 @@ import {
   CheckCircle,
   List,
   Tags,
+  Bookmark, // Import Icon Bookmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +53,7 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-2 group shrink-0 relative z-50"
         >
-          <div className="relative h-9 md:h-10 w-auto aspect-[1142/249] transition-transform duration-300 group-hover:scale-105">
+          <div className="relative h-9 md:h-10 w-auto aspect-1142/249 transition-transform duration-300 group-hover:-rotate-2">
             <Image
               src="/assets/logo.png"
               alt="Mugenime Logo"
@@ -67,16 +68,12 @@ export default function Navbar() {
         {/* --- 2. DESKTOP NAVIGATION --- */}
         <nav
           className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md"
-          onMouseLeave={() => setHoveredPath(null)} // Reset saat mouse keluar navbar
+          onMouseLeave={() => setHoveredPath(null)}
         >
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
-            
-            // Logika Pill:
-            // Tampilkan Pill di item ini JIKA:
-            // 1. Item ini sedang di-HOVER (prioritas utama)
-            // 2. ATAU, tidak ada yang di-hover, tapi item ini sedang ACTIVE (prioritas kedua)
-            const showPill = hoveredPath === link.href || (isActive && hoveredPath === null);
+            const showPill =
+              hoveredPath === link.href || (isActive && hoveredPath === null);
 
             return (
               <Link
@@ -85,13 +82,12 @@ export default function Navbar() {
                 onMouseEnter={() => setHoveredPath(link.href)}
                 className={cn(
                   "relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200",
-                  "z-10" // Pastikan link berada di atas pill secara stacking context
+                  "z-10"
                 )}
               >
-                {/* Background Sliding Animation (Pill) */}
                 {showPill && (
                   <motion.div
-                    layoutId="navbar-pill" // ID yang sama membuat animasi 'loncat' antar elemen
+                    layoutId="navbar-pill"
                     className="absolute inset-0 bg-indigo-600 rounded-full -z-10"
                     transition={{
                       type: "spring",
@@ -100,12 +96,9 @@ export default function Navbar() {
                     }}
                   />
                 )}
-
-                {/* Text Content */}
                 <span
                   className={cn(
                     "relative z-20 transition-colors duration-200",
-                    // Jika pill ada di sini (baik karena hover atau active), text jadi putih
                     showPill
                       ? "text-white"
                       : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -113,8 +106,6 @@ export default function Navbar() {
                 >
                   {link.name}
                 </span>
-                
-                {/* Indikator titik telah dihapus sesuai permintaan */}
               </Link>
             );
           })}
@@ -125,6 +116,18 @@ export default function Navbar() {
           <div className="hidden md:block w-full max-w-[260px] lg:max-w-[300px] transition-all focus-within:max-w-[320px]">
             <SearchInput />
           </div>
+
+          {/* BOOKMARK BUTTON (Desktop & Mobile Visible) */}
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600"
+          >
+            <Link href="/bookmark" aria-label="Lihat Bookmark">
+               <Bookmark className="w-5 h-5" />
+            </Link>
+          </Button>
 
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -166,6 +169,29 @@ export default function Navbar() {
                   <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
                     Menu Utama
                   </h4>
+                  
+                  {/* Tambahkan Bookmark juga di dalam list menu mobile agar lengkap */}
+                  <Link
+                      href="/bookmark"
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 group",
+                        pathname === "/bookmark"
+                          ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                          : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg transition-colors",
+                        pathname === "/bookmark"
+                          ? "bg-indigo-100 dark:bg-indigo-500/20"
+                          : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-white dark:group-hover:bg-zinc-700 shadow-xs"
+                      )}>
+                        <Bookmark className="w-4.5 h-4.5" />
+                      </div>
+                      Bookmark Saya
+                  </Link>
+
                   {navLinks.map((link) => {
                     const Icon = link.icon;
                     const isActive = pathname === link.href;
@@ -193,7 +219,6 @@ export default function Navbar() {
                           <Icon className="w-4.5 h-4.5" />
                         </div>
                         {link.name}
-                        {/* Mobile tidak pakai sliding pill, jadi indikator dot/border opsional jika mau */}
                       </Link>
                     );
                   })}
