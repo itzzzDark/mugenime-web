@@ -433,7 +433,11 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
 
             {/* Comments */}
             <div className="pt-2">
-              <CommentSection />
+              <CommentSection
+                identifier={anime.slug}
+                title={anime.title}
+                slug={`anime/${slug}`}
+              />
             </div>
           </div>
         </div>
