@@ -140,7 +140,7 @@ export default function CommentSection({
       {/* Decorative Gradient Background */}
       <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-primary/5 rounded-3xl blur-2xl -z-10" />
 
-      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-background/40 shadow-xl backdrop-blur-xl transition-all duration-300">
+      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card shadow-xl backdrop-blur-xl transition-all duration-300">
         {/* --- HEADER --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 border-b border-border/40">
           <div className="flex items-start gap-4">
