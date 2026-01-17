@@ -18,6 +18,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
   ChevronLeft,
   ChevronRight,
   Loader2,
@@ -31,16 +39,17 @@ import {
   Clock,
   Video,
   PlayCircle,
-  Calendar,
-  Home,
-  Tv,
   Building2,
   Star,
+  HardDrive,
+  Calendar,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import BatchDownload from "./batchDownload";
 import CommentSection from "./commentSection";
+import { cn } from "@/lib/utils";
 
 interface WatchViewProps {
   episode: EpisodeDetail;
@@ -59,7 +68,7 @@ export default function WatchView({
 }: Readonly<WatchViewProps>) {
   // --- STATE ---
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string>(
-    episode?.defaultStreamingUrl || ""
+    episode?.defaultStreamingUrl || "",
   );
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
@@ -171,44 +180,62 @@ export default function WatchView({
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Breadcrumb Navigation */}
-      <nav className="flex items-center text-sm text-zinc-500 mb-6 space-x-2 overflow-hidden">
-        <Link href="/" className="hover:text-indigo-600 transition-colors">
-          <Home className="w-4 h-4" />
-        </Link>
-        <span className="text-zinc-300">/</span>
-        <Link href="/" className="hover:text-indigo-600 transition-colors">
-          Anime
-        </Link>
-        <span className="text-zinc-300">/</span>
-        <Link
-          href={`/anime/${parentAnimeSlug}`}
-          className="hover:text-indigo-600 transition-colors truncate max-w-[150px] md:max-w-xs"
-        >
-          {animeDetail?.title || "Detail"}
-        </Link>
-        <span className="text-zinc-300">/</span>
-        <span className="font-medium text-zinc-900 dark:text-zinc-200 truncate">
-          Episode {episode.title.match(/Episode\s+(\d+)/i)?.[1] || "Playing"}
-        </span>
-      </nav>
+      <div className="mb-6 overflow-hidden">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href="/"
+                className="flex items-center gap-1 hover:text-primary"
+              >
+                <Home className="w-3.5 h-3.5" /> Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/list-anime" className="hover:text-primary">
+                Anime
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href={`/anime/${parentAnimeSlug}`}
+                className="hover:text-primary line-clamp-1 max-w-[150px] sm:max-w-xs"
+              >
+                {animeDetail?.title || "Detail"}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="line-clamp-1">
+                Episode{" "}
+                {new RegExp(/Episode\s+(\d+)/i).exec(episode.title)?.[1] ||
+                  "Playing"}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
         {/* --- LEFT COLUMN (PLAYER & INFO) --- */}
         <div className="lg:col-span-8 space-y-6">
           {/* 1. PLAYER CARD */}
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="relative w-full aspect-video bg-black">
               {/* Loading State Overlay */}
               <div
-                className={`absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm transition-all duration-300 ${
+                className={cn(
+                  "absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300",
                   isLoadingVideo
                     ? "opacity-100 pointer-events-auto"
-                    : "opacity-0 pointer-events-none"
-                }`}
+                    : "opacity-0 pointer-events-none",
+                )}
               >
                 <div className="bg-white/10 p-3 rounded-full mb-3">
-                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
                 <p className="text-white/80 font-medium text-sm">
                   Menghubungkan ke Server...
@@ -227,13 +254,13 @@ export default function WatchView({
             </div>
 
             {/* Player Controls */}
-            <div className="p-4 sm:p-5 border-t border-zinc-100 dark:border-zinc-800">
+            <div className="p-4 sm:p-5 border-t border-border">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div className="space-y-1.5 flex-1">
-                  <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 leading-snug">
+                  <h1 className="text-lg sm:text-xl font-bold text-foreground leading-snug">
                     {episode.title}
                   </h1>
-                  <div className="flex items-center gap-3 text-xs text-zinc-500">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       {episode.releaseTime || "N/A"}
@@ -245,7 +272,7 @@ export default function WatchView({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 md:flex-none border-zinc-200 hover:bg-zinc-50 text-zinc-700 hover:text-indigo-600 hover:border-indigo-200"
+                    className="flex-1 md:flex-none border-border hover:bg-muted text-muted-foreground hover:text-primary hover:border-primary/50"
                     disabled={!episode.hasPrevEpisode}
                     asChild
                   >
@@ -263,7 +290,7 @@ export default function WatchView({
                   </Button>
                   <Button
                     size="sm"
-                    className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20"
+                    className="flex-1 md:flex-none bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20"
                     disabled={!episode.hasNextEpisode}
                     asChild
                   >
@@ -285,17 +312,17 @@ export default function WatchView({
           </div>
 
           {/* 2. SERVER SELECTION */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
+          <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm flex items-center gap-2">
-                <div className="w-1 h-4 bg-indigo-600 rounded-full" />
+              <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                <div className="w-1 h-4 bg-primary rounded-full" />
                 Pilih Server
               </h3>
               <a
                 href={currentVideoUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-xs text-indigo-600 hover:text-indigo-700 font-medium flex items-center hover:underline"
+                className="text-xs text-primary hover:text-primary/80 font-medium flex items-center hover:underline"
               >
                 <ExternalLink className="w-3 h-3 mr-1" /> Tab Baru
               </a>
@@ -305,13 +332,13 @@ export default function WatchView({
               defaultValue={episode.server.qualities[0]?.title || "360p"}
               className="w-full"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 border-b border-border pb-2">
                 <TabsList className="w-full sm:w-auto h-auto p-0 bg-transparent gap-2 justify-start flex-wrap">
                   {episode.server.qualities.map((qualityGroup) => (
                     <TabsTrigger
                       key={qualityGroup.title}
                       value={qualityGroup.title}
-                      className="rounded-full px-4 py-1.5 text-xs font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:border-indigo-600 text-zinc-500 transition-all shadow-sm"
+                      className="rounded-full px-4 py-1.5 text-xs font-medium border border-border bg-muted/40 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary text-muted-foreground transition-all shadow-sm"
                     >
                       {qualityGroup.title}
                     </TabsTrigger>
@@ -333,25 +360,24 @@ export default function WatchView({
                         disabled={
                           isLoadingVideo && selectedServerId !== server.serverId
                         }
-                        className={`
-                          relative group flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-medium border transition-all duration-200
-                          ${
-                            selectedServerId === server.serverId
-                              ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                              : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600"
-                          }
-                        `}
+                        className={cn(
+                          "relative group flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-medium border transition-all duration-200",
+                          selectedServerId === server.serverId
+                            ? "bg-primary border-primary text-primary-foreground shadow-md shadow-primary/20"
+                            : "bg-card border-border text-muted-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5",
+                        )}
                       >
                         {isLoadingVideo &&
                         selectedServerId === server.serverId ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />
                         ) : (
                           <PlayCircle
-                            className={`w-3.5 h-3.5 mr-2 ${
+                            className={cn(
+                              "w-3.5 h-3.5 mr-2",
                               selectedServerId === server.serverId
                                 ? "opacity-100"
-                                : "opacity-50 group-hover:opacity-100"
-                            }`}
+                                : "opacity-50 group-hover:opacity-100",
+                            )}
                           />
                         )}
                         <span className="truncate capitalize">
@@ -367,8 +393,8 @@ export default function WatchView({
 
           {/* 3. ANIME DETAIL CARD (Overview) */}
           {animeDetail && (
-            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm flex flex-col md:flex-row gap-5">
-              <div className="shrink-0 relative w-[100px] md:w-[120px] aspect-[2/3] rounded-lg overflow-hidden bg-zinc-100 shadow-sm border border-zinc-100 mx-auto md:mx-0">
+            <div className="bg-card rounded-xl border border-border p-5 shadow-sm flex flex-col md:flex-row gap-5">
+              <div className="shrink-0 relative w-[100px] md:w-[120px] aspect-2/3 rounded-lg overflow-hidden bg-muted shadow-sm border border-border mx-auto md:mx-0">
                 {animeDetail.poster ? (
                   <Image
                     src={getProxyUrl(animeDetail.poster)}
@@ -379,14 +405,14 @@ export default function WatchView({
                     unoptimized
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-300">
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                     <Info className="w-8 h-8" />
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0 space-y-3">
                 <div>
-                  <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 transition-colors line-clamp-1">
+                  <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors line-clamp-1">
                     <Link href={`/anime/${parentAnimeSlug}`}>
                       {animeDetail.title}
                     </Link>
@@ -394,24 +420,23 @@ export default function WatchView({
                   <div className="flex flex-wrap items-center gap-2 mt-2">
                     <Badge
                       variant="secondary"
-                      className="bg-zinc-100 text-zinc-600 border-zinc-200 rounded-md"
+                      className="bg-muted text-muted-foreground border-border rounded-md"
                     >
                       {animeDetail.status}
                     </Badge>
                     {animeDetail.score && (
                       <Badge
                         variant="outline"
-                        className="border-yellow-300 text-yellow-700 bg-yellow-50 rounded-md flex items-center gap-1"
+                        className="border-yellow-500/30 text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/10 rounded-md flex items-center gap-1"
                       >
                         <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />{" "}
                         {animeDetail.score}
                       </Badge>
                     )}
-                    {/* Menampilkan Studio sesuai request */}
                     {animeDetail.studios && (
                       <Badge
                         variant="outline"
-                        className="border-zinc-200 text-zinc-500 flex items-center gap-1 rounded-md"
+                        className="border-border text-muted-foreground flex items-center gap-1 rounded-md"
                       >
                         <Building2 className="w-3 h-3" />
                         {animeDetail.studios}
@@ -421,10 +446,10 @@ export default function WatchView({
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1">
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">
                     Sinopsis
                   </h4>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-4 leading-relaxed">
+                  <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
                     {(typeof animeDetail.synopsis === "string"
                       ? animeDetail.synopsis
                       : animeDetail.synopsis?.paragraphs?.join(" ")) ||
@@ -437,20 +462,19 @@ export default function WatchView({
         </div>
 
         {/* --- RIGHT COLUMN (SIDEBAR) --- */}
-        {/* Tidak menggunakan 'sticky' agar sidebar ikut scroll */}
         <div className="lg:col-span-4 space-y-6">
           {/* A. EPISODE LIST */}
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-            <div className="p-4 bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-              <h3 className="font-semibold text-sm flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
-                <List className="w-4 h-4 text-indigo-600" /> Daftar Episode
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+            <div className="p-4 bg-muted/40 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold text-sm flex items-center gap-2 text-foreground">
+                <List className="w-4 h-4 text-primary" /> Daftar Episode
               </h3>
-              <span className="text-[10px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full border border-border">
                 {displayEpisodeList.length} Episode
               </span>
             </div>
 
-            <div className="p-3 max-h-[350px] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900">
+            <div className="p-3 max-h-[350px] overflow-y-auto custom-scrollbar bg-card">
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {displayEpisodeList.toReversed().map((ep) => {
                   const isCurrent = ep.episodeId === episodeSlug;
@@ -458,14 +482,12 @@ export default function WatchView({
                     <Link
                       key={ep.episodeId}
                       href={`/watch/${slug}/${ep.episodeId}`}
-                      className={`
-                          group relative flex flex-col items-center justify-center p-2 rounded-lg border text-xs font-semibold transition-all duration-200
-                          ${
-                            isCurrent
-                              ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                              : "bg-zinc-50 dark:bg-zinc-800/50 border-zinc-100 dark:border-zinc-700 text-zinc-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-white hover:shadow-sm"
-                          }
-                        `}
+                      className={cn(
+                        "group relative flex flex-col items-center justify-center p-2 rounded-lg border text-xs font-semibold transition-all duration-200",
+                        isCurrent
+                          ? "bg-primary border-primary text-primary-foreground shadow-md shadow-primary/20"
+                          : "bg-muted/30 border-border text-muted-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5 hover:shadow-sm",
+                      )}
                     >
                       <span className="z-10 relative">{ep.eps}</span>
                     </Link>
@@ -477,32 +499,32 @@ export default function WatchView({
 
           {/* B. INFO CREDITS */}
           {episode.info && (
-            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-4 text-xs space-y-3">
-              <h4 className="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-100 pb-2 mb-2">
+            <div className="bg-card rounded-xl border border-border shadow-sm p-4 text-xs space-y-3">
+              <h4 className="font-bold text-foreground border-b border-border pb-2 mb-2">
                 Informasi File
               </h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 flex items-center gap-2">
+                  <span className="text-muted-foreground flex items-center gap-2">
                     <User className="w-3 h-3" /> Credit
                   </span>
-                  <span className="text-zinc-800 font-medium truncate max-w-[150px]">
+                  <span className="text-foreground font-medium truncate max-w-[150px]">
                     {episode.info.credit || "-"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 flex items-center gap-2">
+                  <span className="text-muted-foreground flex items-center gap-2">
                     <Video className="w-3 h-3" /> Encoder
                   </span>
-                  <span className="text-zinc-800 font-medium truncate max-w-[150px]">
+                  <span className="text-foreground font-medium truncate max-w-[150px]">
                     {episode.info.encoder || "-"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500 flex items-center gap-2">
+                  <span className="text-muted-foreground flex items-center gap-2">
                     <Clock className="w-3 h-3" /> Durasi
                   </span>
-                  <span className="text-zinc-800 font-medium">
+                  <span className="text-foreground font-medium">
                     {episode.info.duration || "-"}
                   </span>
                 </div>
@@ -510,26 +532,26 @@ export default function WatchView({
             </div>
           )}
 
-          {/* C. DOWNLOAD SECTION */}
+          {/* C. DOWNLOAD SECTION (Improved UI) */}
           {(Object.keys(groupedDownloads).length > 0 || batchData) && (
             <div className="space-y-4">
               {Object.keys(groupedDownloads).length > 0 && (
-                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-                  <div className="p-4 bg-zinc-50/50 border-b border-zinc-100 flex items-center gap-2">
-                    <Download className="w-4 h-4 text-indigo-600" />
-                    <h3 className="font-semibold text-sm text-zinc-800">
-                      Download
+                <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                  <div className="p-4 bg-muted/40 border-b border-border flex items-center gap-2">
+                    <Download className="w-4 h-4 text-primary" />
+                    <h3 className="font-semibold text-sm text-foreground">
+                      Download Episode
                     </h3>
                   </div>
                   <Accordion type="single" collapsible className="w-full">
                     {Object.entries(groupedDownloads).map(
-                      ([format, qualities], idx) => (
+                      ([format, qualities]) => (
                         <AccordionItem
                           key={format}
                           value={format}
-                          className="border-zinc-100 px-0"
+                          className="border-border px-0"
                         >
-                          <AccordionTrigger className="px-4 py-3 hover:bg-zinc-50 hover:no-underline text-sm font-medium text-zinc-700">
+                          <AccordionTrigger className="px-4 py-3 hover:bg-muted/30 hover:no-underline text-sm font-medium text-foreground">
                             <div className="flex items-center gap-2">
                               {format === "MP4" ? (
                                 <FileVideo className="w-4 h-4 text-blue-500" />
@@ -539,30 +561,37 @@ export default function WatchView({
                               <span>{format}</span>
                             </div>
                           </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-4 pt-1 bg-zinc-50/30 space-y-2">
+                          <AccordionContent className="px-4 pb-4 pt-1 bg-muted/20 space-y-2">
                             {qualities.map((item) => {
                               const { res } = parseDownloadTitle(item.title);
                               return (
                                 <div
                                   key={item.title}
-                                  className="bg-white border border-zinc-200 rounded-md p-2.5 shadow-sm"
+                                  className="bg-card border border-border rounded-lg p-3 shadow-sm hover:border-primary/20 transition-colors"
                                 >
-                                  <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xs font-bold text-zinc-700">
+                                  {/* Header Item: Resolution & Size */}
+                                  <div className="flex justify-between items-center mb-3">
+                                    <Badge
+                                      variant="outline"
+                                      className="bg-primary/10 text-primary border-primary/20 font-bold"
+                                    >
                                       {res}
-                                    </span>
-                                    <span className="text-[10px] text-zinc-400">
+                                    </Badge>
+                                    <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
+                                      <HardDrive className="w-3 h-3" />
                                       {item.size}
                                     </span>
                                   </div>
-                                  <div className="flex flex-wrap gap-1.5">
+
+                                  {/* Grid Links */}
+                                  <div className="grid grid-cols-3 gap-2">
                                     {item.urls.map((link) => (
                                       <a
                                         key={link.title}
                                         href={link.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center h-6 px-2 text-[10px] font-medium text-zinc-600 bg-zinc-100 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 border border-zinc-200 rounded transition-colors"
+                                        className="flex items-center justify-center h-7 px-2 text-[10px] font-medium text-muted-foreground bg-muted/50 hover:bg-primary/10 hover:text-primary hover:border-primary/30 border border-border rounded transition-all truncate"
                                       >
                                         {link.title}
                                       </a>
@@ -573,7 +602,7 @@ export default function WatchView({
                             })}
                           </AccordionContent>
                         </AccordionItem>
-                      )
+                      ),
                     )}
                   </Accordion>
                 </div>
@@ -586,7 +615,7 @@ export default function WatchView({
       </div>
 
       {/* 4. Comments */}
-      <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="mt-8 pt-8 border-t border-border">
         <CommentSection
           identifier={episodeSlug}
           title={`${animeDetail?.title} - ${episode.title}`}

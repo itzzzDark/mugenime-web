@@ -11,16 +11,12 @@ import {
 } from "lucide-react";
 import AnimeCard from "@/components/animeCard";
 import { FadeInWrapper, HeroSection } from "@/components/homeSection";
-// import { HeroSection, FadeInWrapper } from "@/components/home-sections"; // Import komponen client baru
 
-// Revalidate data setiap 30 menit (ISR)
 export const revalidate = 1800;
 
 export default async function HomePage() {
   const data = await fetchAnime<HomeData>("anime/home");
-
   const heroAnime = data?.ongoing?.animeList[0] ?? null;
-  // Skip index 0 karena sudah jadi Hero, ambil 10 berikutnya
   const ongoingList = data?.ongoing?.animeList.slice(1, 11) ?? [];
   const completedList = data?.completed?.animeList.slice(0, 10) ?? [];
 
@@ -38,16 +34,16 @@ export default async function HomePage() {
     {
       id: 2,
       icon: Info,
-      title: "Komentar Segera Hadir",
-      content: "Fitur komentar sedang dibangun. Stay tune!",
+      title: "Fitur Komentar (Beta)",
+      content: "Fitur komentar sudah bisa dipakai (Beta)",
       theme: "blue",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 pb-20 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-background pb-20 selection:bg-primary/30">
       
-      {/* --- 1. HERO SECTION (Animated Client Component) --- */}
+      {/* --- 1. HERO SECTION --- */}
       {heroAnime && (
         <HeroSection 
           heroAnime={heroAnime} 
@@ -73,7 +69,7 @@ export default async function HomePage() {
                     ${
                       isAlert
                         ? "bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900 border-l-4 border-l-red-500"
-                        : "bg-white/60 dark:bg-zinc-900/40 border-indigo-200 dark:border-indigo-900 border-l-4 border-l-indigo-500"
+                        : "bg-card/60 border-primary/20 border-l-4 border-l-primary"
                     }
                     backdrop-blur-md
                   `}
@@ -82,7 +78,7 @@ export default async function HomePage() {
                   <div className="absolute -right-6 -top-6 text-current opacity-5 dark:opacity-[0.03] group-hover:scale-110 transition-transform duration-500 rotate-12">
                     <Icon
                       className={`w-32 h-32 ${
-                        isAlert ? "text-red-500" : "text-indigo-500"
+                        isAlert ? "text-red-500" : "text-primary"
                       }`}
                     />
                   </div>
@@ -94,7 +90,7 @@ export default async function HomePage() {
                         ${
                           isAlert
                             ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-200 dark:ring-red-800"
-                            : "bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 ring-indigo-200 dark:ring-indigo-800"
+                            : "bg-primary/10 text-primary ring-primary/20"
                         }
                       `}
                     >
@@ -102,7 +98,7 @@ export default async function HomePage() {
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+                      <h3 className="font-bold text-lg text-foreground tracking-tight flex items-center gap-2">
                         {item.title}
                         {isAlert && (
                           <span className="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/50 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/10">
@@ -110,7 +106,7 @@ export default async function HomePage() {
                           </span>
                         )}
                       </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-full">
+                      <p className="text-sm text-muted-foreground leading-relaxed max-w-full">
                         {item.content}
                       </p>
                     </div>
@@ -124,16 +120,16 @@ export default async function HomePage() {
         {/* --- ONGOING SECTION --- */}
         <section className="space-y-8">
           <FadeInWrapper>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border pb-6">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
                   <Flame className="w-5 h-5" />
                   <span>Update Terbaru</span>
                 </div>
-                <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+                <h2 className="text-3xl font-black text-foreground tracking-tight">
                   Sedang Tayang
                 </h2>
-                <p className="text-zinc-500 dark:text-zinc-400 max-w-lg">
+                <p className="text-muted-foreground max-w-lg">
                   Daftar anime musim ini yang sedang <i>on-going</i>. Tonton
                   episode terbarunya sekarang.
                 </p>
@@ -142,7 +138,7 @@ export default async function HomePage() {
               <Button
                 variant="outline"
                 asChild
-                className="rounded-full border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 group"
+                className="rounded-full border-border hover:bg-secondary group"
               >
                 <Link href="/ongoing-anime">
                   Lihat Semua{" "}
@@ -152,7 +148,7 @@ export default async function HomePage() {
             </div>
           </FadeInWrapper>
 
-          {/* Grid Layout - Cards sudah di-handle animasinya di dalam AnimeCard via index prop */}
+          {/* Grid Layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
             {ongoingList.map((anime, idx) => (
               <AnimeCard key={anime.animeId} anime={anime} index={idx} />
@@ -163,16 +159,16 @@ export default async function HomePage() {
         {/* --- COMPLETED SECTION --- */}
         <section className="space-y-8">
           <FadeInWrapper>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border pb-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 font-bold text-sm uppercase tracking-wider">
                   <Sparkles className="w-5 h-5" />
                   <span>Maraton Time</span>
                 </div>
-                <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+                <h2 className="text-3xl font-black text-foreground tracking-tight">
                   Anime Tamat
                 </h2>
-                <p className="text-zinc-500 dark:text-zinc-400 max-w-lg">
+                <p className="text-muted-foreground max-w-lg">
                   Rekomendasi anime yang sudah selesai tayang (Completed). Cocok
                   buat yang suka maraton!
                 </p>
@@ -181,7 +177,7 @@ export default async function HomePage() {
               <Button
                 variant="outline"
                 asChild
-                className="rounded-full border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 group"
+                className="rounded-full border-border hover:bg-secondary group"
               >
                 <Link href="/completed-anime">
                   Lihat Semua{" "}

@@ -24,7 +24,7 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
       className="group block space-y-3 w-full"
     >
       {/* --- CARD CONTAINER --- */}
-      <div className="relative aspect-[3/4.2] overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+      <div className="relative aspect-[3/4.2] overflow-hidden rounded-xl bg-muted border border-border shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:shadow-primary/5 group-hover:-translate-y-1">
         {/* IMAGE LAYER */}
         {isValidPoster ? (
           <Image
@@ -36,7 +36,7 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
             unoptimized
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-800 text-zinc-400">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted text-muted-foreground">
             <ImageOff className="w-8 h-8 mb-2 opacity-50" />
             <span className="text-[10px] font-medium">No Image</span>
           </div>
@@ -52,9 +52,10 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
           </div>
         </div>
 
-        {/* TOP BADGES (Episode Focus) */}
+        {/* TOP BADGES */}
         <div className="absolute top-0 left-0 right-0 p-2 flex justify-start items-start z-20">
-          <Badge className="bg-indigo-600 hover:bg-indigo-700 text-white border-0 px-2.5 h-6 text-[11px] font-semibold shadow-lg shadow-indigo-900/20">
+          {/* Badge Primary color */}
+          <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 px-2.5 h-6 text-[11px] font-semibold shadow-lg shadow-primary/20">
             Episode {anime.episodes}
           </Badge>
         </div>
@@ -64,7 +65,7 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
           <div className="flex items-center justify-between bg-black/60 backdrop-blur-md rounded-lg p-2 border border-white/10 shadow-lg">
             {/* Hari */}
             <div className="flex items-center gap-1.5 text-zinc-100">
-              <CalendarDays className="w-3.5 h-3.5 text-indigo-400" />
+              <CalendarDays className="w-3.5 h-3.5 text-primary" />
               <span className="text-[11px] font-bold uppercase tracking-wide">
                 {anime.releaseDay || "Tamat"}
               </span>
@@ -83,7 +84,7 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
 
       {/* --- TITLE (OUTSIDE CARD) --- */}
       <div className="space-y-1 px-1">
-        <h3 className="font-bold text-sm leading-snug line-clamp-2 text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+        <h3 className="font-bold text-sm leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
           {anime.title}
         </h3>
       </div>

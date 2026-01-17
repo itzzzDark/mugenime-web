@@ -11,10 +11,10 @@ import { Anime } from "@/lib/types";
 export function HeroSection({
   heroAnime,
   proxyUrl,
-}: {
+}: Readonly<{
   heroAnime: Anime;
   proxyUrl: string;
-}) {
+}>) {
   if (!heroAnime) return null;
 
   // Animation Variants
@@ -36,7 +36,7 @@ export function HeroSection({
   };
 
   return (
-    <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-zinc-900">
+    <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-background">
       {/* Background Layer */}
       <motion.div
         initial={{ opacity: 0, scale: 1.1 }}
@@ -48,13 +48,16 @@ export function HeroSection({
           src={proxyUrl}
           alt="Hero Background"
           fill
-          className="object-cover opacity-60 dark:opacity-40 blur-sm"
+          className="object-cover opacity-30 dark:opacity-20 blur-sm"
           priority
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent dark:from-zinc-950 dark:via-zinc-950/60 dark:to-zinc-950/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-transparent to-transparent dark:from-zinc-950/90 dark:via-zinc-950/20 dark:to-transparent" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[40px_40px] opacity-20 pointer-events-none" />
+        {/* Gradient Overlay menyesuaikan 'bg-background' */}
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-background/90 via-transparent to-transparent" />
+
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] bg-size-[40px_40px] text-muted-foreground/10 pointer-events-none" />
       </motion.div>
 
       {/* Hero Content */}
@@ -71,11 +74,13 @@ export function HeroSection({
             variants={itemVars}
             className="flex flex-wrap items-center gap-3"
           >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 dark:bg-indigo-500/20 text-white dark:text-indigo-300 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+            {/* Semantic Badge: Primary */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-primary/20">
               <TrendingUp className="w-3.5 h-3.5" />
               On Going
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-600 text-white dark:text-amber-400 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+            {/* Semantic Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
               <Star className="w-3.5 h-3.5 fill-current" />
               Episode Terbaru
             </div>
@@ -84,7 +89,7 @@ export function HeroSection({
           {/* Title */}
           <motion.h1
             variants={itemVars}
-            className="text-4xl md:text-6xl lg:text-7xl font-black text-indigo-600 dark:text-indigo-500 leading-[1.1] tracking-tight"
+            className="text-4xl md:text-6xl lg:text-7xl font-black text-primary leading-[1.1] tracking-tight"
           >
             {heroAnime.title}
           </motion.h1>
@@ -92,19 +97,21 @@ export function HeroSection({
           {/* Meta Data */}
           <motion.div
             variants={itemVars}
-            className="flex flex-wrap items-center gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-300"
+            className="flex flex-wrap items-center gap-4 text-sm font-medium text-muted-foreground"
           >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-100/50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 backdrop-blur-sm">
-              <Calendar className="w-4 h-4 text-indigo-600" />
-              <span>{heroAnime.releaseDay}</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border backdrop-blur-sm">
+              <Calendar className="w-4 h-4 text-primary" />
+              <span className="text-foreground">{heroAnime.releaseDay}</span>
             </div>
             {heroAnime.episodes && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-100/50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 backdrop-blur-sm">
-                <PlayCircle className="w-4 h-4 text-indigo-600" />
-                <span>Episode {heroAnime.episodes}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border backdrop-blur-sm">
+                <PlayCircle className="w-4 h-4 text-primary" />
+                <span className="text-foreground">
+                  Episode {heroAnime.episodes}
+                </span>
               </div>
             )}
-            <div className="text-xs text-indigo-600">
+            <div className="text-xs text-primary font-semibold bg-primary/5 px-2 py-1 rounded-md">
               Updated: {heroAnime.latestReleaseDate}
             </div>
           </motion.div>
@@ -117,7 +124,7 @@ export function HeroSection({
             <Button
               asChild
               size="lg"
-              className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-12 px-8 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 transition-all text-base"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 px-8 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all text-base"
             >
               <Link href={`/anime/${heroAnime.animeId}`}>
                 <PlayCircle className="w-5 h-5 mr-2" /> Tonton Sekarang
@@ -127,7 +134,7 @@ export function HeroSection({
               asChild
               variant="outline"
               size="lg"
-              className="rounded-full border-zinc-300 dark:border-zinc-700 bg-white/50 dark:bg-black/20 hover:bg-white dark:hover:bg-zinc-800 text-zinc-900 dark:text-white backdrop-blur-sm h-12 px-8 text-base transition-all"
+              className="rounded-full border-border bg-background/50 hover:bg-secondary text-foreground backdrop-blur-sm h-12 px-8 text-base transition-all"
             >
               <Link href="/jadwal-anime">Jadwal Rilis</Link>
             </Button>
@@ -151,10 +158,10 @@ export function HeroSection({
             }}
             className="relative group"
           >
-            {/* Glow Effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition duration-1000" />
+            {/* Glow Effect using Primary Color */}
+            <div className="absolute -inset-1 bg-linear-to-r from-primary to-purple-600 rounded-2xl blur-3xl opacity-20 group-hover:opacity-40 transition duration-1000" />
 
-            <div className="relative w-[350px] aspect-[3/4] rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/20 dark:ring-white/10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+            <div className="relative w-[350px] aspect-3/4 rounded-xl overflow-hidden shadow-2xl ring-1 ring-border rotate-3 group-hover:rotate-0 transition-transform duration-500 bg-card">
               <Image
                 src={proxyUrl}
                 alt={heroAnime.title}
@@ -164,7 +171,7 @@ export function HeroSection({
                 priority
                 unoptimized
               />
-              <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+              <div className="absolute bottom-0 inset-x-0 h-1/3 bg-linear-to-t from-black/90 to-transparent flex items-end p-6">
                 <p className="text-white text-sm font-medium line-clamp-1 opacity-90">
                   {heroAnime.title}
                 </p>
@@ -181,10 +188,10 @@ export function HeroSection({
 export function FadeInWrapper({
   children,
   delay = 0,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   delay?: number;
-}) {
+}>) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

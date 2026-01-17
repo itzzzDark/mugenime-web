@@ -13,7 +13,6 @@ import { Anime } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
 export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
-  // 1. VALIDASI POSTER
   const isValidPoster =
     anime.poster &&
     anime.poster !== "" &&
@@ -28,7 +27,7 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
     <Link href={`/anime/${anime.animeId}`} className="group block h-full">
       <div className="flex flex-col h-full gap-3">
         {/* --- CARD CONTAINER (IMAGE) --- */}
-        <div className="relative aspect-[3/4.2] overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+        <div className="relative aspect-[3/4.2] overflow-hidden rounded-xl bg-muted border border-border shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:shadow-primary/5 group-hover:-translate-y-1">
           {/* IMAGE LAYER */}
           {isValidPoster ? (
             <Image
@@ -40,7 +39,7 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
               unoptimized
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-800 text-zinc-400">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted text-muted-foreground">
               <ImageOff className="w-8 h-8 mb-2 opacity-50" />
               <span className="text-[10px] font-medium">No Image</span>
             </div>
@@ -60,7 +59,7 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
           <div className="absolute top-0 left-0 right-0 p-2 flex justify-between items-start z-20">
             {/* Kiri: Episode Count */}
             {anime.episodes ? (
-              <Badge className="bg-indigo-600/90 hover:bg-indigo-600 text-white border-0 px-2 h-6 text-[10px] font-semibold shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 px-2 h-6 text-[10px] font-semibold shadow-lg backdrop-blur-sm flex items-center gap-1">
                 {anime.episodes} Episode
               </Badge>
             ) : (
@@ -72,7 +71,7 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
               </Badge>
             )}
 
-            {/* Kanan: Rating */}
+            {/* Kanan: Rating (Tetap Kuning) */}
             {anime.score && anime.score !== "" && (
               <Badge className="bg-amber-500/90 hover:bg-amber-500 text-white border-0 px-2 h-6 text-[10px] font-bold shadow-lg backdrop-blur-sm flex items-center gap-1">
                 <Star className="w-3 h-3 fill-white" />
@@ -85,7 +84,7 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
           {anime.season && (
             <div className="absolute bottom-2 left-2 right-2 z-20">
               <div className="flex items-center justify-center gap-1.5 bg-black/60 backdrop-blur-md rounded-lg p-1.5 border border-white/10 shadow-lg">
-                <Calendar className="w-3 h-3 text-indigo-400" />
+                <Calendar className="w-3 h-3 text-primary" />
                 <span className="text-[10px] font-bold text-zinc-100 uppercase tracking-wide">
                   {anime.season}
                 </span>
@@ -97,13 +96,13 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
         {/* --- TEXT CONTENT (BELOW CARD) --- */}
         <div className="space-y-2 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="font-bold text-sm leading-snug line-clamp-2 text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+          <h3 className="font-bold text-sm leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
             {anime.title}
           </h3>
 
           {/* Studio Info */}
           {anime.studios && (
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clapperboard className="w-3 h-3" />
               <span className="line-clamp-1">{anime.studios}</span>
             </div>
@@ -115,13 +114,13 @@ export default function GenreCard({ anime }: Readonly<{ anime: Anime }>) {
               {anime.genres.slice(0, 3).map((g) => (
                 <span
                   key={g.genreId}
-                  className="px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] text-zinc-600 dark:text-zinc-400 font-medium"
+                  className="px-1.5 py-0.5 rounded-md bg-secondary border border-border text-[10px] text-muted-foreground font-medium"
                 >
                   {g.title}
                 </span>
               ))}
               {anime.genres.length > 3 && (
-                <span className="text-[10px] text-zinc-400 self-center">
+                <span className="text-[10px] text-muted-foreground self-center">
                   +{anime.genres.length - 3}
                 </span>
               )}

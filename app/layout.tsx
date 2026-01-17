@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/providers";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import NextTopLoader from "nextjs-toploader";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,17 +46,20 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${outfit.variable}`}
     >
-      <body className="antialiased bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
-        <NextTopLoader color="#4f39f6" />
-        <Providers>
+      <body className="font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextTopLoader color="#4f39f6" />
           <Navbar />
-          <main>
-            {children}
-            <Toaster position="top-center" richColors />
-            <Analytics />
-          </main>
+          <main>{children}</main>
           <Footer />
-        </Providers>
+          <Toaster position="top-center" richColors />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

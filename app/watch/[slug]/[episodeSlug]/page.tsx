@@ -13,7 +13,9 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { episodeSlug } = await params;
   try {
-    const data = await fetchAnime<EpisodeDetail>(`anime/episode/${episodeSlug}`);
+    const data = await fetchAnime<EpisodeDetail>(
+      `anime/episode/${episodeSlug}`,
+    );
     return {
       title: `Nonton ${data.title} - Mugenime`,
       description: `Streaming ${data.title} subtitle Indonesia gratis.`,
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function WatchPage({ params }: Props) {
+export default async function WatchPage({ params }: Readonly<Props>) {
   const { episodeSlug, slug } = await params;
 
   let episodeData: EpisodeDetail | null = null;
@@ -32,7 +34,9 @@ export default async function WatchPage({ params }: Props) {
 
   try {
     // 1. Fetch Data Episode
-    episodeData = await fetchAnime<EpisodeDetail>(`anime/episode/${episodeSlug}`);
+    episodeData = await fetchAnime<EpisodeDetail>(
+      `anime/episode/${episodeSlug}`,
+    );
 
     try {
       // 2. Fetch Data Anime Detail
@@ -42,10 +46,10 @@ export default async function WatchPage({ params }: Props) {
       if (animeData?.batch?.batchId) {
         try {
           batchData = await fetchAnime<BatchResponse>(
-            `anime/batch/${animeData.batch.batchId}`
+            `anime/batch/${animeData.batch.batchId}`,
           );
-        } catch (batchErr) {
-          console.warn("[WatchPage] Gagal fetch batch:", batchErr);
+        } catch (error_) {
+          console.warn("[WatchPage] Gagal fetch batch:", error_);
         }
       }
     } catch (err) {
@@ -61,7 +65,7 @@ export default async function WatchPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <WatchView
         episode={episodeData}
         animeDetail={animeData}

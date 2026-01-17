@@ -23,8 +23,6 @@ export default function BatchDownload({
   batchData: BatchResponse;
 }>) {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Ambil format pertama (biasanya cuma ada 1 format list batch)
   const formats = batchData.downloadUrl.formats[0];
 
   if (!formats) return null;
@@ -34,19 +32,19 @@ export default function BatchDownload({
       <Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
-        className="w-full border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-all group"
+        className="w-full border border-border rounded-xl bg-card overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-all group"
       >
         <CollapsibleTrigger asChild>
-          <div className="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-900/50">
+          <div className="flex items-center justify-between p-4 bg-muted/40 hover:bg-muted/60 transition-colors">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-500">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                 <Package className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-sm md:text-base text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600">
+                <h3 className="font-bold text-sm md:text-base text-foreground group-hover:text-primary transition-colors">
                   Download Batch (Tamat)
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   Unduh semua episode dalam satu paket (Zip/Rar).
                 </p>
               </div>
@@ -54,7 +52,7 @@ export default function BatchDownload({
             <Button
               variant="ghost"
               size="sm"
-              className="w-9 h-9 p-0 rounded-full"
+              className="w-9 h-9 p-0 rounded-full text-muted-foreground"
             >
               {isOpen ? (
                 <ChevronUp className="w-4 h-4" />
@@ -67,18 +65,18 @@ export default function BatchDownload({
         </CollapsibleTrigger>
 
         <CollapsibleContent className="animate-collapsible-down">
-          <div className="p-4 space-y-6 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="p-4 space-y-6 border-t border-border">
             {formats.qualities.map((quality) => (
               <div key={quality.title} className="space-y-3">
                 {/* Header Kualitas & Ukuran */}
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-50 font-bold"
+                    className="bg-primary/10 text-primary border-primary/20 font-bold"
                   >
                     {quality.title}
                   </Badge>
-                  <span className="text-xs text-zinc-400 font-mono flex items-center gap-1">
+                  <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
                     <HardDrive className="w-3 h-3" /> {quality.size}
                   </span>
                 </div>
@@ -91,7 +89,7 @@ export default function BatchDownload({
                       variant="outline"
                       size="sm"
                       asChild
-                      className="text-xs h-9 bg-white dark:bg-zinc-950 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors"
+                      className="text-xs h-9 bg-background hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors"
                     >
                       <a
                         href={link.url}

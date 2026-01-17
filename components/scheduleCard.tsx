@@ -26,7 +26,7 @@ export default function ScheduleCard({
   const [detail, setDetail] = useState<AnimeDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
-  console.log("detail", detail);
+
   const isValidPoster =
     anime.poster &&
     anime.poster !== "" &&
@@ -50,7 +50,7 @@ export default function ScheduleCard({
   const renderHoverContent = () => {
     if (loading) {
       return (
-        <div className="flex items-center justify-center py-4 text-zinc-500 gap-2">
+        <div className="flex items-center justify-center py-4 text-muted-foreground gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span className="text-xs">Memuat info detail...</span>
         </div>
@@ -65,16 +65,16 @@ export default function ScheduleCard({
 
       return (
         <>
-          <div className="flex flex-wrap gap-2 text-[10px] text-zinc-500 dark:text-zinc-400">
-            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded">
+          <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1 bg-secondary px-2 py-1 rounded">
               <CalendarClock className="w-3 h-3" />
               {detail.duration}
             </div>
-            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded">
+            <div className="flex items-center gap-1 bg-secondary px-2 py-1 rounded">
               <Film className="w-3 h-3" />
               {detail.type}
             </div>
-            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded">
+            <div className="flex items-center gap-1 bg-secondary px-2 py-1 rounded">
               <Info className="w-3 h-3" />
               {detail.status}
             </div>
@@ -85,14 +85,14 @@ export default function ScheduleCard({
               <Badge
                 key={g.genreId}
                 variant="secondary"
-                className="text-[10px] h-5 px-1.5"
+                className="text-[10px] h-5 px-1.5 bg-secondary text-secondary-foreground"
               >
                 {g.title}
               </Badge>
             ))}
           </div>
 
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed">
+          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
             {synopsisText}
           </p>
         </>
@@ -100,7 +100,7 @@ export default function ScheduleCard({
     }
 
     return (
-      <div className="py-2 text-xs text-zinc-500 text-center">
+      <div className="py-2 text-xs text-muted-foreground text-center">
         Gagal memuat detail atau arahkan ulang mouse.
       </div>
     );
@@ -114,7 +114,7 @@ export default function ScheduleCard({
           className="group relative block space-y-3"
         >
           {/* POSTER WRAPPER */}
-          <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+          <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-muted border border-border shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
             {isValidPoster ? (
               <Image
                 src={imageUrl}
@@ -125,7 +125,7 @@ export default function ScheduleCard({
                 unoptimized
               />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-200 dark:bg-zinc-800 text-zinc-400">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted text-muted-foreground">
                 <ImageOff className="w-8 h-8 mb-2 opacity-50" />
                 <span className="text-[10px] font-medium">No Image</span>
               </div>
@@ -139,7 +139,7 @@ export default function ScheduleCard({
 
           {/* TITLE */}
           <div className="space-y-1">
-            <h3 className="font-bold text-sm leading-tight line-clamp-2 text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <h3 className="font-bold text-sm leading-tight line-clamp-2 text-foreground group-hover:text-primary transition-colors">
               {anime.title}
             </h3>
           </div>
@@ -147,8 +147,9 @@ export default function ScheduleCard({
       </HoverCardTrigger>
 
       {/* HOVER CONTENT */}
-      <HoverCardContent className="w-80 p-0 overflow-hidden border-zinc-200 dark:border-zinc-800 shadow-xl z-50">
-        <div className="relative h-32 bg-zinc-900">
+      {/* Menggunakan bg-popover untuk popup card agar konsisten */}
+      <HoverCardContent className="w-80 p-0 overflow-hidden border-border bg-popover shadow-xl z-50">
+        <div className="relative h-32 bg-black">
           {isValidPoster && (
             <Image
               src={imageUrl}
@@ -158,21 +159,19 @@ export default function ScheduleCard({
               unoptimized
             />
           )}
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black to-transparent" />
           <div className="absolute bottom-3 left-4 right-4">
             <h4 className="font-bold text-white text-lg line-clamp-1">
               {anime.title}
             </h4>
-            <h4 className="font-normal text-zinc-200 text-xs line-clamp-1">
+            <h4 className="font-normal text-zinc-300 text-xs line-clamp-1">
               {detail?.studios || detail?.studio}
             </h4>
           </div>
         </div>
 
         {/* Memanggil fungsi renderHoverContent di sini */}
-        <div className="p-4 bg-white dark:bg-zinc-950 space-y-3">
-          {renderHoverContent()}
-        </div>
+        <div className="p-4 space-y-3">{renderHoverContent()}</div>
       </HoverCardContent>
     </HoverCard>
   );
