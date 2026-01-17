@@ -8,9 +8,11 @@ import {
   Sparkles,
   ServerCrash,
   Info,
+  MessageCircle, // Icon tambahan untuk section komentar
 } from "lucide-react";
 import AnimeCard from "@/components/animeCard";
 import { FadeInWrapper, HeroSection } from "@/components/homeSection";
+import CommentSection from "@/components/commentSection"; // Import Component
 
 export const revalidate = 1800;
 
@@ -42,18 +44,16 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background pb-20 selection:bg-primary/30">
-      
       {/* --- 1. HERO SECTION --- */}
       {heroAnime && (
-        <HeroSection 
-          heroAnime={heroAnime} 
-          proxyUrl={getProxyUrl(heroAnime.poster)} 
+        <HeroSection
+          heroAnime={heroAnime}
+          proxyUrl={getProxyUrl(heroAnime.poster)}
         />
       )}
 
       {/* --- 2. ANNOUNCEMENT & CONTENT --- */}
       <div className="container mx-auto px-4 -mt-10 relative z-20 space-y-16">
-        
         {/* Announcement Section */}
         <FadeInWrapper delay={0.2}>
           <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 w-full">
@@ -94,7 +94,9 @@ export default async function HomePage() {
                         }
                       `}
                     >
-                      <Icon className={`w-5 h-5 ${isAlert && "animate-pulse"}`} />
+                      <Icon
+                        className={`w-5 h-5 ${isAlert && "animate-pulse"}`}
+                      />
                     </div>
 
                     <div className="space-y-1">
@@ -193,6 +195,27 @@ export default async function HomePage() {
               <AnimeCard key={anime.animeId} anime={anime} index={idx} />
             ))}
           </div>
+        </section>
+
+        {/* --- 3. GENERAL COMMENT SECTION --- */}
+        <section className="space-y-8 pt-10 border-t border-border">
+          <FadeInWrapper>
+            <div className="space-y-2 mb-6">
+              <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
+                <MessageCircle className="w-5 h-5" />
+                <span>Komunitas</span>
+              </div>
+              <h2 className="text-3xl font-black text-foreground tracking-tight">
+                General
+              </h2>
+              <p className="text-muted-foreground max-w-lg">
+                Tempat ngobrol santai atau sekadar menyapa.
+              </p>
+            </div>
+
+            {/* Komponen Komentar */}
+            <CommentSection identifier="general" title="Umum" type="page" />
+          </FadeInWrapper>
         </section>
       </div>
     </div>

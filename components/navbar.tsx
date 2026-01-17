@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import {
   Menu,
   Home,
@@ -13,6 +15,8 @@ import {
   Tags,
   Bookmark,
   History,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +52,56 @@ export default function Navbar() {
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const pathname = usePathname();
 
+  // Logic Theme
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  // --- FUNGSI ANIMASI TRANSISI TEMA (LINGKARAN) ---
+  const handleThemeToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+
+    if (
+      !(document as any).startViewTransition ||
+      globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setTheme(newTheme);
+      return;
+    }
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+
+    const transition = (document as any).startViewTransition(() => {
+      setTheme(newTheme);
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          pseudoElement: "::view-transition-new(root)",
+        },
+      );
+    });
+  };
+
   const getMobileItemClass = (path: string) =>
     cn(
       "flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 group",
@@ -72,7 +126,7 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* --- 1. LOGO SECTION --- */}
+        {/* --- LOGO SECTION --- */}
         <Link
           href="/"
           className="flex items-center gap-2 group shrink-0 relative z-50"
@@ -89,7 +143,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* --- 2. DESKTOP NAVIGATION --- */}
+        {/* --- DESKTOP NAVIGATION --- */}
         <nav
           className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-secondary/50 border border-border/50 backdrop-blur-md"
           onMouseLeave={() => setHoveredPath(null)}
@@ -135,17 +189,17 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* --- 3. ACTIONS --- */}
+        {/* --- ACTIONS --- */}
         <div className="flex items-center gap-2 flex-1 justify-end">
           {/* Search Input */}
           <div className="hidden md:block w-full max-w-[200px] lg:max-w-[260px] transition-all focus-within:max-w-[300px]">
             <SearchInput />
           </div>
 
-          {/* DESKTOP ACTION BUTTONS CONTAINER (With Tooltips) */}
+          {/* DESKTOP ACTION BUTTONS CONTAINER */}
           <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-secondary/50 border border-border/50 backdrop-blur-md">
             <TooltipProvider delayDuration={100}>
-              {/* 1. History Button */}
+              {/* History Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -164,7 +218,7 @@ export default function Navbar() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* 2. Bookmark Button */}
+              {/* Bookmark Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -183,7 +237,7 @@ export default function Navbar() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* 3. Theme Toggle */}
+              {/* Theme Toggle Desktop */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span
@@ -216,6 +270,7 @@ export default function Navbar() {
             <SheetContent
               side="right"
               className="w-[85vw] sm:w-[380px] p-0 border-l-border bg-background"
+              onOpenAutoFocus={(e) => e.preventDefault()}
             >
               <SheetHeader className="p-6 border-b border-border text-left">
                 <div className="relative h-8 w-32">
@@ -230,45 +285,65 @@ export default function Navbar() {
               </SheetHeader>
 
               <div className="flex flex-col h-full overflow-y-auto">
-                <div className="p-6 pb-2">
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    Pencarian
-                  </h4>
-                  <SearchInput onSearchSubmit={() => setIsOpen(false)} />
+                <div className="p-6 pb-2 space-y-4">
+                  {/* SEARCH SECTION */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                      Pencarian
+                    </h4>
+                    <SearchInput onSearchSubmit={() => setIsOpen(false)} />
+                  </div>
+
+                  {/* THEME TOGGLE BUTTON (MOBILE) */}
+                  <button
+                    onClick={handleThemeToggle}
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-secondary/40 border border-border/50 hover:bg-secondary/70 active:scale-[0.98] transition-all duration-200 text-left group overflow-hidden relative"
+                  >
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className="p-2.5 bg-background rounded-lg shadow-sm text-primary group-hover:text-primary transition-colors border border-border/50">
+                        {mounted ? (
+                          resolvedTheme === "dark" ? (
+                            <Moon className="w-4.5 h-4.5" />
+                          ) : (
+                            <Sun className="w-4.5 h-4.5" />
+                          )
+                        ) : (
+                          <div className="w-4.5 h-4.5 bg-muted rounded-full" />
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground">
+                          Tampilan Aplikasi
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {mounted
+                            ? resolvedTheme === "dark"
+                              ? "Mode Gelap"
+                              : "Mode Terang"
+                            : "Memuat tema..."}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Indikator Status (Dot) */}
+                    <div
+                      className={cn(
+                        "w-2 h-2 rounded-full mr-1 relative z-10",
+                        mounted
+                          ? resolvedTheme === "dark"
+                            ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"
+                            : "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]"
+                          : "bg-muted",
+                      )}
+                    />
+                  </button>
                 </div>
 
-                <div className="p-6 space-y-1">
+                <div className="p-6 pt-2 space-y-1">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                     Menu Utama
                   </h4>
 
-                  {/* MOBILE MENU ITEMS */}
-
-                  {/* History Item (Mobile) */}
-                  <Link
-                    href="/history"
-                    onClick={() => setIsOpen(false)}
-                    className={getMobileItemClass("/history")}
-                  >
-                    <div className={getMobileIconContainerClass("/history")}>
-                      <History className="w-4.5 h-4.5" />
-                    </div>
-                    Riwayat Tontonan
-                  </Link>
-
-                  {/* Bookmark Item (Mobile) */}
-                  <Link
-                    href="/bookmark"
-                    onClick={() => setIsOpen(false)}
-                    className={getMobileItemClass("/bookmark")}
-                  >
-                    <div className={getMobileIconContainerClass("/bookmark")}>
-                      <Bookmark className="w-4.5 h-4.5" />
-                    </div>
-                    Bookmark Saya
-                  </Link>
-
-                  {/* Regular Nav Links */}
+                  {/* Nav Links */}
                   {navLinks.map((link) => {
                     const Icon = link.icon;
                     return (
@@ -285,19 +360,39 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
+
+                  <div className="my-2 border-t border-border/50" />
+
+                  {/* History Item */}
+                  <Link
+                    href="/history"
+                    onClick={() => setIsOpen(false)}
+                    className={getMobileItemClass("/history")}
+                  >
+                    <div className={getMobileIconContainerClass("/history")}>
+                      <History className="w-4.5 h-4.5" />
+                    </div>
+                    Riwayat Tontonan
+                  </Link>
+
+                  {/* Bookmark Item */}
+                  <Link
+                    href="/bookmark"
+                    onClick={() => setIsOpen(false)}
+                    className={getMobileItemClass("/bookmark")}
+                  >
+                    <div className={getMobileIconContainerClass("/bookmark")}>
+                      <Bookmark className="w-4.5 h-4.5" />
+                    </div>
+                    Bookmark Saya
+                  </Link>
                 </div>
 
-                {/* MOBILE SETTINGS SECTION */}
-                <div className="mt-auto p-6 border-t border-border">
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    Pengaturan
-                  </h4>
-                  <div className="flex items-center justify-between px-4 py-3.5 rounded-xl bg-secondary/50 border border-border/50">
-                    <span className="text-sm font-medium text-foreground">
-                      Tema Gelap
-                    </span>
-                    <ModeToggle />
-                  </div>
+                {/* Footer */}
+                <div className="mt-auto p-6 border-t border-border text-center">
+                  <p className="text-[10px] text-muted-foreground">
+                    &copy; {new Date().getFullYear()} Mugenime.
+                  </p>
                 </div>
               </div>
             </SheetContent>
