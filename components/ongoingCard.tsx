@@ -28,12 +28,13 @@ export default function OngoingCard({ anime }: Readonly<{ anime: Anime }>) {
         {/* IMAGE LAYER */}
         {isValidPoster ? (
           <Image
-            src={imageUrl}
+            src={isValidPoster ? anime.poster : ""}
             alt={anime.title}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
             unoptimized
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted text-muted-foreground">

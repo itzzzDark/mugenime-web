@@ -82,7 +82,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         title: title,
         description: description,
-        images: [getProxyUrl(anime.poster)],
+        // images: [getProxyUrl(anime.poster)],
+        images: [anime.poster],
         type: "video.tv_show",
         siteName: "Mugenime",
       },
@@ -90,7 +91,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         card: "summary_large_image",
         title: title,
         description: description,
-        images: [getProxyUrl(anime.poster)],
+        // images: [getProxyUrl(anime.poster)],
+        images: [anime.poster],
       },
     };
   } catch (e) {
@@ -138,7 +140,8 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
     "@context": "https://schema.org",
     "@type": "TVSeries",
     name: anime.title,
-    image: getProxyUrl(anime.poster),
+    // image: getProxyUrl(anime.poster),
+    image: anime.poster,
     description: synopsisText,
     numberOfEpisodes: anime.episodes || episodeLists.length.toString(),
     genre: genreString,
@@ -169,13 +172,15 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src={getProxyUrl(anime.poster)}
+            src={anime.poster ?? ""}
             alt="Background"
+            // src={getProxyUrl(anime.poster)}
             fill
             className="object-cover opacity-50 dark:opacity-20 blur-xl scale-110"
             priority
             unoptimized
-          />
+            referrerPolicy="no-referrer"
+            />
         </div>
 
         {/* Gradients using Semantic Background Colors */}
@@ -193,13 +198,15 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
               {/* Poster Card */}
               <div className="group relative aspect-3/4 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-border bg-muted">
                 <Image
-                  src={getProxyUrl(anime.poster)}
+                  // src={getProxyUrl(anime.poster)}
+                  src={anime.poster ?? ""}
                   alt={anime.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 768px) 60vw, 300px"
                   priority
                   unoptimized
+                  referrerPolicy="no-referrer"
                 />
 
                 {/* Rating Badge Overlay */}
@@ -308,7 +315,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                         href="/list-anime"
                         className="hover:text-primary transition-colors"
                       >
-                        List Anime
+                        Anime
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>

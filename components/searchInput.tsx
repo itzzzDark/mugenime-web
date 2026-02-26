@@ -107,12 +107,14 @@ export default function SearchInput({
             >
               <div className="relative w-12 h-16 shrink-0 rounded-md overflow-hidden bg-muted">
                 <Image
-                  src={getProxyUrl(anime.poster)}
+                  // src={getProxyUrl(anime.poster)}
+                  src={anime.poster ?? ""}
                   alt={anime.title}
                   fill
                   className="object-cover"
                   sizes="48px"
                   unoptimized
+                  referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
               </div>

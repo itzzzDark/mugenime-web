@@ -40,12 +40,13 @@ export default function AnimeCard({ anime, index = 0 }: Readonly<AnimeCardProps>
           {/* 1. IMAGE LAYER */}
           {isValidPoster ? (
             <Image
-              src={imageUrl}
+              src={isValidPoster ? anime.poster : ""}
               alt={anime.title}
               fill
               className="object-cover transition-transform duration-700"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
               unoptimized
+              referrerPolicy="no-referrer"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-secondary text-muted-foreground">

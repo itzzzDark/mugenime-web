@@ -117,12 +117,13 @@ export default function ScheduleCard({
           <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-muted border border-border shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
             {isValidPoster ? (
               <Image
-                src={imageUrl}
+                src={isValidPoster ? anime.poster : ""}
                 alt={anime.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                 sizes="(max-width: 768px) 50vw, 20vw"
                 unoptimized
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted text-muted-foreground">
@@ -152,11 +153,12 @@ export default function ScheduleCard({
         <div className="relative h-32 bg-black">
           {isValidPoster && (
             <Image
-              src={imageUrl}
+              src={isValidPoster ? anime.poster : ""}
               alt="bg"
               fill
               className="object-cover opacity-30"
               unoptimized
+              referrerPolicy="no-referrer"
             />
           )}
           <div className="absolute inset-0 bg-linear-to-t from-black to-transparent" />

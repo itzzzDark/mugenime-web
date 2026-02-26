@@ -42,10 +42,10 @@ export default function BatchDownload({
               </div>
               <div>
                 <h3 className="font-bold text-sm md:text-base text-foreground group-hover:text-primary transition-colors">
-                  Download Batch (Tamat)
+                  Download Batch
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Unduh semua episode dalam satu paket (Zip/Rar).
+                  Unduh semua episode (Zip/Rar).
                 </p>
               </div>
             </div>

@@ -99,12 +99,14 @@ export default function BookmarkPage() {
                 {/* Image Container */}
                 <div className="relative aspect-3/4 rounded-xl overflow-hidden bg-muted shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:shadow-primary/20 group-hover:-translate-y-1">
                   <Image
-                    src={getProxyUrl(anime.poster)}
+                    // src={getProxyUrl(anime.poster)}
+                    src={anime.poster ?? ""}
                     alt={anime.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                     sizes="(max-width: 768px) 50vw, 20vw"
                     unoptimized
+                    referrerPolicy="no-referrer"
                   />
 
                   {/* Overlay Gradient */}

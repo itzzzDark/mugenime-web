@@ -51,6 +51,7 @@ export function HeroSection({
           className="object-cover opacity-30 dark:opacity-20 blur-sm"
           priority
           unoptimized
+          referrerPolicy="no-referrer"
         />
         {/* Gradient Overlay menyesuaikan 'bg-background' */}
         <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
@@ -170,6 +171,7 @@ export function HeroSection({
                 sizes="350px"
                 priority
                 unoptimized
+                referrerPolicy="no-referrer"
               />
               <div className="absolute bottom-0 inset-x-0 h-1/3 bg-linear-to-t from-black/90 to-transparent flex items-end p-6">
                 <p className="text-white text-sm font-medium line-clamp-1 opacity-90">

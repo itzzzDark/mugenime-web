@@ -48,7 +48,8 @@ export default async function HomePage() {
       {heroAnime && (
         <HeroSection
           heroAnime={heroAnime}
-          proxyUrl={getProxyUrl(heroAnime.poster)}
+          // proxyUrl={getProxyUrl(heroAnime.poster)}
+          proxyUrl={heroAnime.poster}
         />
       )}
 

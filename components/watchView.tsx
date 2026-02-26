@@ -397,12 +397,14 @@ export default function WatchView({
               <div className="shrink-0 relative w-[100px] md:w-[120px] aspect-2/3 rounded-lg overflow-hidden bg-muted shadow-sm border border-border mx-auto md:mx-0">
                 {animeDetail.poster ? (
                   <Image
-                    src={getProxyUrl(animeDetail.poster)}
+                    // src={getProxyUrl(animeDetail.poster)}
+                    src={animeDetail.poster ?? ""}
                     alt={animeDetail.title}
                     fill
                     className="object-cover"
                     sizes="120px"
                     unoptimized
+                    referrerPolicy="no-referrer"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">
