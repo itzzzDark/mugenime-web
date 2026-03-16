@@ -2,7 +2,6 @@
   <!-- Ganti link gambar di bawah dengan logo proyek Anda jika ada -->
   <a href="https://mugenime.vercel.app/"><img src="https://i.ibb.co.com/7JcFYF2Q/Mugenime-Logo-stroke.png" alt="Mugenime Logo" width="500"></a>
  
-  <h1><a href="https://mugenime.vercel.app/">✨ Mugenime 🌙</a></h1>
   
   <p>
     <strong>Modern Anime Streaming Platform</strong>
@@ -38,8 +37,8 @@ Download dan streaming anime subtitle Indonesia lengkap dalam format Mp4 dan MKV
 - **📥 Download Center**: Unduh anime per episode atau langsung satu paket (*Batch*) dengan berbagai pilihan resolusi.
 - **📅 Jadwal Rilis**: Pantau anime favorit yang rilis setiap hari secara *real-time*.
 - **🔍 Pencarian Cepat**: Fitur pencarian instan dengan *live suggestion*.
-- **🔖 Riwayat & Bookmark (Soon)**: Simpan progres tontonan dan anime favorit di perangkat lokal (**Local Storage**) tanpa perlu login.
-- **🌗 Dark Mode (Soon)**: Tampilan yang nyaman di mata dengan opsi tema gelap/terang.
+- **🔖 Riwayat & Bookmark**: Simpan progres tontonan dan anime favorit di perangkat lokal (**Local Storage**) tanpa perlu login.
+- **🌗 Dark Mode**: Tampilan yang nyaman di mata dengan opsi tema gelap/terang.
 - **📱 Responsive Design**: Tampilan optimal di Desktop, Tablet, dan Mobile.
 
 ---
@@ -55,12 +54,10 @@ Project ini dibangun menggunakan ekosistem Next.js dan library modern untuk perf
 
 ### Styling & UI
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Components**: [Shadcn UI](https://ui.shadcn.com/) (Radix UI based)
+- **Components**: [Shadcn UI](https://ui.shadcn.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Animation**: `tailwindcss-animate`
 
-### State & Data Management
-- **Server State**: [TanStack Query v5](https://tanstack.com/query/latest) (Fetching, caching, & sync)
+### State Management
 - **Local State**: [Zustand](https://github.com/pmndrs/zustand) (History/Bookmark)
 
 ---
@@ -110,12 +107,6 @@ Buat file `.env.local` di root folder dan tambahkan konfigurasi berikut:
 # Base URL
 NEXT_PUBLIC_API_BASE_URL=YOUR_API_BASE_URL_HERE
 NEXT_PUBLIC_BASE_URL=YOUR_WEBSITE_BASE_URL_HERE
-
-# Giscus Configuration
-NEXT_PUBLIC_GISCUS_REPO=YOUR_GISCUS_REPO_HERE
-NEXT_PUBLIC_GISCUS_REPO_ID=YOUR_GISCUS_REPO_ID_HERE
-NEXT_PUBLIC_GISCUS_CATEGORY=YOUR_GISCUS_CATEGORY_HERE
-NEXT_PUBLIC_GISCUS_CATEGORY_ID=YOUR_GISCUS_CATEGORY_ID_HERE
 ```
 
 ### 4. Jalankan Development Server
@@ -137,12 +128,12 @@ pnpm start
 > **Peringatan:** Aplikasi ini menggunakan API pihak ketiga (Sanka Vollerei) yang memiliki batasan ketat.
 
 *   **Rate Limit**: ~70 request / menit.
-*   **Strategi**: Aplikasi ini telah dikonfigurasi menggunakan fitur caching bawaan Next.js (`revalidate`) dan TanStack Query untuk meminimalisir request ke server asli dan menghindari pemblokiran IP (IP Ban).
+*   **Strategi**: Aplikasi ini telah dikonfigurasi menggunakan fitur caching bawaan Next.js (`revalidate`) untuk meminimalisir request ke server asli dan menghindari pemblokiran IP (IP Ban).
 *   **Saran**: Jangan melakukan spam refresh atau load testing berlebihan pada environment production.
 
 ---
 
-## 🤝 Kredit & Sumber Data
+## 🤝 Kredit
 
 *   **Data Anime**: Diambil dari API publik **Sanka Vollerei**.
 
@@ -155,5 +146,5 @@ Project ini dibuat untuk tujuan pembelajaran dan edukasi. Hak cipta konten anime
 <br />
 
 <div align="center">
-  Made with ❤️ and 🧅 by <strong>Aing Gabut awokaokwok</strong>
+  Made with ❤️ and 🧅
 </div>
