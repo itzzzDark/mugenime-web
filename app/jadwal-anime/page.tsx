@@ -1,14 +1,10 @@
-import { fetchAnime } from "@/lib/api";
-import { ScheduleDay } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Info } from "lucide-react";
-import ScheduleCard from "@/components/scheduleCard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const revalidate = 3600;
 
 export default async function JadwalPage() {
-  const scheduleData = await fetchAnime<ScheduleDay[]>("anime/schedule");
-
   const daysMap: { [key: number]: string } = {
     1: "Senin",
     2: "Selasa",
@@ -21,9 +17,7 @@ export default async function JadwalPage() {
   const todayIndex = new Date().getDay();
   const currentDayName = daysMap[todayIndex];
 
-  const defaultTab = scheduleData.some((d) => d.day === currentDayName)
-    ? currentDayName
-    : "Senin";
+  const defaultTab = currentDayName;
 
   return (
     <div className="min-h-screen bg-background pb-20 py-10">
@@ -117,54 +111,12 @@ export default async function JadwalPage() {
         </div>
 
         {/* CONTENT */}
-        <Tabs defaultValue={defaultTab} className="w-full space-y-8">
-          {/* TABS NAVIGATION (Scrollable on mobile) */}
-          <div className="sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2 -mx-4 px-4 md:mx-0 md:px-0 md:static md:bg-transparent md:backdrop-blur-none">
-            <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-muted border border-border no-scrollbar gap-x-1">
-              {scheduleData.map((item) => (
-                <TabsTrigger
-                  key={item.day}
-                  value={item.day}
-                  className="px-6 py-2.5 min-w-[100px] text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all cursor-pointer hover:bg-background/50"
-                >
-                  {item.day}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          {scheduleData.map((dayData) => (
-            <TabsContent
-              key={dayData.day}
-              value={dayData.day}
-              className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-6 w-1 bg-primary rounded-full" />
-                  <h2 className="text-xl font-bold text-foreground">
-                    Anime Hari {dayData.day}
-                  </h2>
-                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                    {dayData.anime_list.length} Anime
-                  </span>
-                </div>
-
-                {dayData.anime_list.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8">
-                    {dayData.anime_list.map((anime) => (
-                      <ScheduleCard key={anime.slug} anime={anime} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-border rounded-xl">
-                    <p>Tidak ada jadwal untuk hari ini.</p>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Fitur jadwal anime sedang dalam pengembangan. Harap periksa kembali nanti untuk melihat jadwal tayang anime terbaru.
+          </AlertDescription>
+        </Alert>
       </div>
     </div>
   );

@@ -1,12 +1,11 @@
-import { fetchAnime } from "@/lib/api";
-import { GenreListResponse } from "@/lib/types";
+import { getGenres } from "@/lib/api";
 import Link from "next/link";
 import { Tags, Hash } from "lucide-react";
 
 export const revalidate = 86400;
 
 export default async function GenrePage() {
-  const genres = await fetchAnime<GenreListResponse>("anime/genre");
+  const genres = await getGenres();
 
   return (
     <div className="min-h-screen pb-20 py-10 bg-background">
@@ -35,17 +34,17 @@ export default async function GenrePage() {
 
         {/* --- GENRE GRID --- */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-          {genres.genreList.map((genre) => (
+          {genres.map((genre) => (
             <Link
-              key={genre.genreId}
-              href={`/genre-anime/${genre.genreId}`}
+              key={genre.id}
+              href={`/genre-anime/${genre.slug}`}
               className="group relative overflow-hidden rounded-xl border border-border bg-card hover:bg-muted/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/50"
             >
               <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
               <div className="relative z-10 flex items-center justify-between">
                 <span className="font-semibold text-sm md:text-base text-foreground group-hover:text-primary transition-colors">
-                  {genre.title}
+                  {genre.name}
                 </span>
                 <Hash className="w-4 h-4 text-muted-foreground group-hover:text-primary/70 transition-colors" />
               </div>

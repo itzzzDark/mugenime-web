@@ -1,41 +1,7 @@
 import { MetadataRoute } from "next";
-import { fetchAnime } from "@/lib/api";
-import { OngoingResponse, CompleteAnimeResponse, Anime } from "@/lib/types";
+import { getOngoingAnimes, getCompletedAnimes } from "@/lib/api";
 
 export const revalidate = 3600;
-
-async function getMultiplePages(
-  endpoint: string,
-  maxPages: number
-): Promise<Anime[]> {
-  const pages = Array.from({ length: maxPages }, (_, i) => i + 1);
-
-  try {
-    const responses = await Promise.all(
-      pages.map((page) =>
-        fetchAnime<OngoingResponse | CompleteAnimeResponse>(
-          `${endpoint}?page=${page}`
-        ).catch((err) => {
-          console.error(`Gagal fetch ${endpoint} page ${page}:`, err);
-          return null;
-        })
-      )
-    );
-
-    const allAnime: Anime[] = [];
-
-    responses.forEach((res) => {
-      if (res && res.animeList) {
-        allAnime.push(...res.animeList);
-      }
-    });
-
-    return allAnime;
-  } catch (error) {
-    console.error("Critical error fetching multiple pages:", error);
-    return [];
-  }
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
@@ -56,19 +22,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const [ongoingList, completedList] = await Promise.all([
-    getMultiplePages("anime/ongoing-anime", 3),
-    getMultiplePages("anime/complete-anime", 3),
+    getOngoingAnimes(1000),
+    getCompletedAnimes(1000),
   ]);
 
   const ongoingRoutes = ongoingList.map((anime) => ({
-    url: `${baseUrl}/anime/${anime.animeId}`,
+    url: `${baseUrl}/anime/${anime.slug}`,
     lastModified: new Date(),
     changeFrequency: "daily" as const,
     priority: 0.9,
   }));
 
   const completedRoutes = completedList.map((anime) => ({
-    url: `${baseUrl}/anime/${anime.animeId}`,
+    url: `${baseUrl}/anime/${anime.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
