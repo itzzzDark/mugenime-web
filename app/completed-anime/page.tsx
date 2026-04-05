@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { CompleteAnimeResponse } from "@/lib/types";
+import { getCompletedAnimes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -18,13 +17,24 @@ export default async function CompletedPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
 
-  // 2. Fetch Data
-  const response = await fetchAnime<CompleteAnimeResponse>(
-    `anime/complete-anime/?page=${currentPage}`,
-  );
+  // 2. Fetch Data from database
+  const allAnimes = await getCompletedAnimes(10000);
+  
+  // Simple client-side pagination
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(allAnimes.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const animeList = allAnimes.slice(startIdx, endIdx);
 
-  const { pagination, animeList } = response;
-  const { totalPages } = pagination;
+  // Mock pagination object
+  const pagination = {
+    hasPrevPage: currentPage > 1,
+    hasNextPage: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    totalPages,
+  };
 
   // --- LOGIC PAGINATION DESKTOP (Full) ---
   const generateDesktopPagination = () => {
@@ -122,7 +132,7 @@ export default async function CompletedPage({ searchParams }: PageProps) {
         {animeList && animeList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
             {animeList.map((anime) => (
-              <CompletedCard key={anime.animeId} anime={anime} />
+              <CompletedCard key={anime.id} anime={anime} />
             ))}
           </div>
         ) : (

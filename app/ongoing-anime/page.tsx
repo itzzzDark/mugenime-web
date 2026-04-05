@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { OngoingResponse } from "@/lib/types";
+import { getOngoingAnimes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -29,12 +28,24 @@ export default async function OngoingPage({
   ];
   const currentDayName = daysMap[new Date().getDay()];
 
-  const response = await fetchAnime<OngoingResponse>(
-    `anime/ongoing-anime?page=${currentPage}`,
-  );
+  // Fetch all ongoing animes from database
+  const allAnimes = await getOngoingAnimes(10000);
+  
+  // Simple client-side pagination
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(allAnimes.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const animeList = allAnimes.slice(startIdx, endIdx);
 
-  const { pagination, animeList } = response;
-  const { totalPages } = pagination;
+  // Mock pagination object for compatibility
+  const pagination = {
+    hasPrevPage: currentPage > 1,
+    hasNextPage: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    totalPages,
+  };
 
   // --- LOGIC PAGINATION DESKTOP  ---
   const generateDesktopPagination = () => {
@@ -142,7 +153,7 @@ export default async function OngoingPage({
         {animeList && animeList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
             {animeList.map((anime) => (
-              <OngoingCard key={anime.animeId} anime={anime} />
+              <OngoingCard key={anime.id} anime={anime} />
             ))}
           </div>
         ) : (

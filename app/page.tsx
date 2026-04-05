@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { HomeData } from "@/lib/types";
+import { getOngoingAnimes, getCompletedAnimes, recordView } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -8,19 +7,21 @@ import {
   Sparkles,
   ServerCrash,
   Info,
-  MessageCircle, // Icon tambahan untuk section komentar
+  MessageCircle,
 } from "lucide-react";
 import AnimeCard from "@/components/animeCard";
 import { FadeInWrapper, HeroSection } from "@/components/homeSection";
-import CommentSection from "@/components/commentSection"; // Import Component
+import CommentSection from "@/components/commentSection";
 
 export const revalidate = 1800;
 
 export default async function HomePage() {
-  const data = await fetchAnime<HomeData>("anime/home");
-  const heroAnime = data?.ongoing?.animeList[0] ?? null;
-  const ongoingList = data?.ongoing?.animeList.slice(1, 11) ?? [];
-  const completedList = data?.completed?.animeList.slice(0, 10) ?? [];
+  const ongoingList = await getOngoingAnimes(11);
+  const completedList = await getCompletedAnimes(10);
+  
+  const heroAnime = ongoingList[0] ?? null;
+  const displayOngoing = ongoingList.slice(1, 11) ?? [];
+  const displayCompleted = completedList ?? [];
 
   const getProxyUrl = (url: string) =>
     `/api/image-proxy?url=${encodeURIComponent(url)}`;
@@ -153,8 +154,8 @@ export default async function HomePage() {
 
           {/* Grid Layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-            {ongoingList.map((anime, idx) => (
-              <AnimeCard key={anime.animeId} anime={anime} index={idx} />
+            {displayOngoing.map((anime, idx) => (
+              <AnimeCard key={anime.id} anime={anime} index={idx} />
             ))}
           </div>
         </section>
@@ -192,8 +193,8 @@ export default async function HomePage() {
 
           {/* Grid Layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-            {completedList.map((anime, idx) => (
-              <AnimeCard key={anime.animeId} anime={anime} index={idx} />
+            {displayCompleted.map((anime, idx) => (
+              <AnimeCard key={anime.id} anime={anime} index={idx} />
             ))}
           </div>
         </section>
