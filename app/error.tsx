@@ -35,11 +35,11 @@ export default function Error({
 
           <div className="space-y-2">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground font-heading">
-              Terjadi Kesalahan
+              Something Went Wrong
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Maaf, sistem mengalami kendala saat memproses permintaanmu.
-              Mungkin server sedang sibuk atau koneksi terputus.
+              Sorry, the system encountered an issue processing your request.
+              The server might be busy or the connection was lost.
             </p>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function Error({
             className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20"
           >
             <RefreshCcw className="w-4 h-4 mr-2" />
-            Coba Lagi
+            Try Again
           </Button>
 
           <Button
@@ -73,7 +73,7 @@ export default function Error({
           >
             <Link href="/">
               <Home className="w-4 h-4 mr-2" />
-              Kembali ke Beranda
+              Back to Home
             </Link>
           </Button>
         </div>

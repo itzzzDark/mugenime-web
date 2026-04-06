@@ -6,13 +6,13 @@ export const revalidate = 3600;
 
 export default async function JadwalPage() {
   const daysMap: { [key: number]: string } = {
-    1: "Senin",
-    2: "Selasa",
-    3: "Rabu",
-    4: "Kamis",
-    5: "Jumat",
-    6: "Sabtu",
-    0: "Minggu",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+    0: "Sunday",
   };
   const todayIndex = new Date().getDay();
   const currentDayName = daysMap[todayIndex];
@@ -44,13 +44,11 @@ export default async function JadwalPage() {
 
                 {/* Judul dengan Gradient Text */}
                 <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                  <span className="text-primary">Jadwal Rilis</span> Anime
+                  Anime <span className="text-primary">Schedule</span>
                 </h1>
 
                 <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl">
-                  Pantau jadwal tayang anime terbaru yang diperbarui secara
-                  otomatis setiap minggu. Arahkan kursor ke poster untuk melihat
-                  detail genre dan durasi.
+                  Track the latest anime airing schedules updated automatically every week. Hover over posters to see genre and duration details.
                 </p>
               </div>
 
@@ -60,17 +58,17 @@ export default async function JadwalPage() {
                   <Info className="w-5 h-5 text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-foreground">Catatan</p>
+                  <p className="text-sm font-bold text-foreground">Note</p>
                   <p className="text-xs md:text-sm text-muted-foreground leading-snug">
-                    Terkadang anime yang statusnya sudah{" "}
+                    Sometimes anime that are already{" "}
                     <span className="font-semibold text-primary">
-                      Completed (Tamat)
+                      Completed
                     </span>{" "}
-                    masih muncul di daftar jadwal{" "}
+                    may still appear in the{" "}
                     <span className="font-semibold text-primary">
-                      Ongoing (Sedang Tayang)
+                      Ongoing
                     </span>{" "}
-                    ini karena bug pada sistem. Harap maklum! 🙏
+                    schedule due to a system bug. Thank you for your understanding! 🙏
                   </p>
                 </div>
               </div>
@@ -85,7 +83,7 @@ export default async function JadwalPage() {
                 {/* Label Atas */}
                 <div className="relative z-10 flex items-center gap-1.5 text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">
                   <Calendar className="w-3 h-3" />
-                  HARI INI
+                  TODAY
                 </div>
 
                 {/* Nama Hari Besar */}
@@ -114,7 +112,7 @@ export default async function JadwalPage() {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Fitur jadwal anime sedang dalam pengembangan. Harap periksa kembali nanti untuk melihat jadwal tayang anime terbaru.
+            The anime schedule feature is currently in development. Please check back later for the latest schedule information.
           </AlertDescription>
         </Alert>
       </div>

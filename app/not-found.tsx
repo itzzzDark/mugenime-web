@@ -31,10 +31,10 @@ export default function NotFound() {
 
         <div className="space-y-2 -mt-10">
           <h2 className="text-2xl md:text-4xl font-bold text-foreground font-heading">
-            Ara ara... Kamu Tersesat?
+            Looks Like You&apos;re Lost
           </h2>
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-            Sepertinya kamu gagal masuk ke isekai 🗿
+            The page you&apos;re looking for doesn&apos;t exist.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function NotFound() {
           >
             <Link href="/">
               <Home className="w-4 h-4 mr-2" />
-              Kembali ke Beranda
+              Back to Home
             </Link>
           </Button>
 
@@ -59,7 +59,7 @@ export default function NotFound() {
           >
             <Link href="/ongoing-anime">
               <Search className="w-4 h-4 mr-2" />
-              Cari Anime Lain
+              Browse Anime
             </Link>
           </Button>
         </div>
@@ -67,7 +67,7 @@ export default function NotFound() {
 
       {/* Footer Decoration */}
       <div className="absolute bottom-10 text-xs text-muted-foreground/50 font-mono">
-        ERROR_CODE: 404_GAGAL_MASUK_ISEKAI
+        ERROR_CODE: 404_PAGE_NOT_FOUND
       </div>
     </div>
   );

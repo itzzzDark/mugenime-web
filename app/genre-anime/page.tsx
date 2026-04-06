@@ -18,16 +18,15 @@ export default async function GenrePage() {
           <div className="relative z-10 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
               <Tags className="w-3.5 h-3.5" />
-              List Genre
+              Genre List
             </div>
 
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-              Cari <span className="text-primary">Genre Anime</span>
+              Browse <span className="text-primary">Anime Genres</span>
             </h1>
 
             <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl">
-              Temukan anime favoritmu berdasarkan genre. Mulai comedy, fantasy,
-              drama, action hingga romance.
+              Discover your favorite anime by genre. From comedy, fantasy, drama, action to romance.
             </p>
           </div>
         </div>

@@ -31,8 +31,8 @@ export default function BookmarkPage() {
   const handleRemove = (e: React.MouseEvent, slug: string, title: string) => {
     e.preventDefault();
     removeBookmark(slug);
-    toast.info("Dihapus", {
-      description: `${title} dihapus dari bookmark.`,
+    toast.info("Removed", {
+      description: `${title} removed from bookmarks.`,
     });
   };
 
@@ -61,26 +61,25 @@ export default function BookmarkPage() {
 
               {/* Title */}
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                Koleksi <span className="text-primary">Bookmark</span> Saya
+                My <span className="text-primary">Bookmarks</span>
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                Daftar anime favorit yang telah Anda simpan. Lanjutkan menonton
-                kapan saja tanpa takut kehilangan jejak episode terakhir Anda.
+                Your saved favorite anime list. Continue watching anytime without losing track of your progress.
               </p>
             </div>
 
             {/* Total Widget */}
             <div className="flex flex-col items-end justify-center px-6 py-3 rounded-2xl bg-background/60 border border-border backdrop-blur-md shadow-sm">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Total Koleksi
+                Total Items
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-primary">
                   {bookmarks.length}
                 </span>
                 <span className="text-sm font-medium text-muted-foreground">
-                  Judul
+                  Titles
                 </span>
               </div>
             </div>
@@ -124,7 +123,7 @@ export default function BookmarkPage() {
                   <button
                     onClick={(e) => handleRemove(e, anime.slug, anime.title)}
                     className="absolute top-2 left-2 p-2 rounded-full bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transform -translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:bg-red-600 z-20 shadow-lg cursor-pointer"
-                    title="Hapus Bookmark"
+                    title="Remove Bookmark"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -162,18 +161,17 @@ export default function BookmarkPage() {
               <Library className="w-10 h-10 text-muted-foreground/50" />
             </div>
             <h3 className="text-xl font-bold text-foreground mb-2">
-              Koleksi Kosong
+              No Bookmarks Yet
             </h3>
             <p className="text-muted-foreground max-w-sm mx-auto mb-8">
-              Anda belum menyimpan anime apapun. Jelajahi koleksi kami dan
-              simpan anime favorit Anda di sini.
+              You haven&apos;t saved any anime yet. Explore our collection and bookmark your favorite titles here.
             </p>
             <Button
               asChild
               size="lg"
               className="rounded-full px-8 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
             >
-              <Link href="/">Jelajahi Anime</Link>
+              <Link href="/">Explore Anime</Link>
             </Button>
           </div>
         )}

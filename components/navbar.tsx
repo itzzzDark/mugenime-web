@@ -39,12 +39,12 @@ import { motion } from "motion/react";
 import { ModeToggle } from "./modeToggle";
 
 const navLinks = [
-  { name: "Beranda", href: "/", icon: Home },
-  { name: "Jadwal", href: "/jadwal-anime", icon: Calendar },
+  { name: "Home", href: "/", icon: Home },
+  { name: "Schedule", href: "/jadwal-anime", icon: Calendar },
   { name: "Ongoing", href: "/ongoing-anime", icon: Zap },
   { name: "Completed", href: "/completed-anime", icon: CheckCircle },
-  { name: "List Anime", href: "/list-anime", icon: List },
-  { name: "Genre", href: "/genre-anime", icon: Tags },
+  { name: "List", href: "/list-anime", icon: List },
+  { name: "Genres", href: "/genre-anime", icon: Tags },
 ];
 
 export default function Navbar() {

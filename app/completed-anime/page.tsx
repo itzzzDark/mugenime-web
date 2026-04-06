@@ -97,24 +97,23 @@ export default async function CompletedPage({ searchParams }: PageProps) {
               {/* Label */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Anime Tamat
+                Completed
               </div>
 
               {/* Title */}
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                Anime <span className="text-primary">Selesai Tayang</span>
+                <span className="text-primary">Completed</span> Anime
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                Koleksi lengkap anime yang sudah tamat. Nikmati maraton nonton
-                tanpa perlu menunggu episode baru rilis setiap minggu.
+                Complete collection of finished anime series. Enjoy binge watching without waiting for new episodes every week.
               </p>
             </div>
 
             {/* Page Indicator Widget */}
             <div className="flex flex-col items-end justify-center px-6 py-3 rounded-2xl bg-card/60 border border-border backdrop-blur-md">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Halaman
+                Page
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-primary">

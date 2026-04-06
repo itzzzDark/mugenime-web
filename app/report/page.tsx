@@ -16,11 +16,11 @@ import CommentSection from "@/components/commentSection";
 export default function ReportPage() {
   const [copied, setCopied] = useState(false);
 
-  const templateText = `Judul Anime: [Nama Anime]
-Episode: [Nomor Episode]
-Masalah: [Link Rusak / Video Error / Subtitle Hilang]
-Server (gunakan jika error pada video player): [VidHide / StreamWish / dll]
-Keterangan Tambahan: [Jelaskan detailnya]
+  const templateText = `Anime Title: [Anime Name]
+Episode: [Episode Number]
+Issue: [Broken Link / Video Error / Missing Subtitles]
+Server (use if video player has issues): [VidHide / StreamWish / etc]
+Additional Details: [Explain the details]
 `;
 
   const handleCopy = () => {
@@ -40,14 +40,13 @@ Keterangan Tambahan: [Jelaskan detailnya]
           <div className="relative z-10 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
               <AlertTriangle className="w-3.5 h-3.5" />
-              Pusat Bantuan
+              Help Center
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-              Lapor <span className="text-primary">Masalah</span>
+              Report <span className="text-primary">Issues</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl">
-              Menemukan link mati, video error, atau kesalahan penamaan episode?
-              Bantu kami memperbaiki Mugenime dengan melaporkannya di sini.
+              Found broken links, video errors, or episode naming issues? Help us improve by reporting them here.
             </p>
           </div>
         </div>
@@ -59,25 +58,25 @@ Keterangan Tambahan: [Jelaskan detailnya]
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Info className="w-5 h-5 text-primary" />
-                Cara Melapor
+                How to Report
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Ikuti panduan berikut agar laporanmu cepat diproses admin.
+                Follow the guide below so your report can be processed quickly by our team.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
               <ul className="list-disc list-inside space-y-2 ml-1">
-                <li>Pastikan koneksi internet kamu stabil.</li>
+                <li>Make sure your internet connection is stable.</li>
                 <li>
-                  Coba refresh atau gunakan{" "}
-                  <b className="text-foreground">Browser Lain</b>.
+                  Try refreshing or use a{" "}
+                  <b className="text-foreground">Different Browser</b>.
                 </li>
                 <li>
-                  Gunakan fitur{" "}
-                  <b className="text-foreground">&quot;Buka Tab Baru&quot;</b>{" "}
-                  jika player error.
+                  Use the{" "}
+                  <b className="text-foreground">&quot;Open in New Tab&quot;</b>{" "}
+                  feature if the player has issues.
                 </li>
-                <li>Jangan spam komentar berulang.</li>
+                <li>Don&apos;t spam duplicate comments.</li>
                 <li>Gunakan bahasa yang sopan.</li>
               </ul>
               <Alert className="bg-primary/5 border-primary/20 mt-4">

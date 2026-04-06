@@ -29,21 +29,19 @@ export default async function ListAnimePage() {
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            {/* KONTEN UTAMA */}
+            {/* MAIN CONTENT */}
             <div className="space-y-4 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
                 <Library className="w-3.5 h-3.5" />
-                List Anime
+                Anime List
               </div>
 
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                Daftar Anime <span className="text-primary">A-Z</span>
+                Anime Directory <span className="text-primary">A-Z</span>
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                Indeks lengkap seluruh anime yang tersedia di Mugenime. Gunakan
-                navigasi cepat di bawah untuk mencari judul favoritmu
-                berdasarkan abjad.
+                Complete index of all available anime. Use the quick navigation below to search your favorite titles alphabetically.
               </p>
             </div>
 
@@ -61,7 +59,7 @@ export default async function ListAnimePage() {
                   +
                 </span>
                 <span className="text-[10px] text-muted-foreground mt-1">
-                  Judul Anime
+                  Anime Titles
                 </span>
               </div>
             </div>
