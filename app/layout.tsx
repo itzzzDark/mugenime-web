@@ -8,6 +8,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
+import { AdminProvider } from "@/lib/admin-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,14 +55,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <NextTopLoader color="#4f39f6" />
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-            <Toaster position="top-center" richColors />
-            <Analytics />
-          </AuthProvider>
+          <AdminProvider>
+            <AuthProvider>
+              <NextTopLoader color="#4f39f6" />
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+              <Toaster position="top-center" richColors />
+              <Analytics />
+            </AuthProvider>
+          </AdminProvider>
         </ThemeProvider>
       </body>
     </html>
