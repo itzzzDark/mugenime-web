@@ -40,12 +40,55 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/stats');
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.stats);
-        setRecentAnimes(data.recentAnimes);
-        setPopularAnimes(data.popularAnimes);
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      // Fetch stats
+      const [animes, episodes, users, genres, analytics] = await Promise.all([
+        supabase.from('animes').select('id', { count: 'exact' }),
+        supabase.from('episodes').select('id', { count: 'exact' }),
+        supabase.from('users').select('id', { count: 'exact' }),
+        supabase.from('genres').select('id', { count: 'exact' }),
+        supabase.from('analytics').select('*'),
+      ]);
+
+      setStats({
+        totalAnimes: animes.count || 0,
+        totalEpisodes: episodes.count || 0,
+        totalUsers: users.count || 0,
+        totalGenres: genres.count || 0,
+        totalViews: analytics.data?.length || 0,
+      });
+
+      // Fetch recent animes
+      const { data: recentData } = await supabase
+        .from('animes')
+        .select('id, title, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      setRecentAnimes(recentData || []);
+
+      // Fetch popular animes (by view count)
+      const { data: analyticsData } = await supabase
+        .from('analytics')
+        .select('anime_id, animes(title)')
+        .returns<Array<{ anime_id: string; animes: { title: string } }> | null>();
+      
+      if (analyticsData) {
+        const viewCounts = analyticsData.reduce((acc, item) => {
+          const key = item.anime_id;
+          acc[key] = (acc[key] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+
+        const popular = Object.entries(viewCounts)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 5)
+          .map(([id, count]) => ({
+            anime_id: id,
+            views: count,
+          }));
+        setPopularAnimes(popular);
       }
     } catch (error) {
       console.error('Failed to fetch stats:', error);

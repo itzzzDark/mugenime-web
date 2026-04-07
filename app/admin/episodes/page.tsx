@@ -35,11 +35,16 @@ export default function EpisodeManagement() {
   const fetchEpisodes = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/episodes');
-      if (response.ok) {
-        const data = await response.json();
-        setEpisodes(data.episodes);
-      }
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      const { data, error } = await supabase
+        .from('episodes')
+        .select('id, title, anime_id, episode_number, air_date, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setEpisodes(data || []);
     } catch (error) {
       toast.error('Failed to fetch episodes');
       console.error(error);
@@ -50,20 +55,18 @@ export default function EpisodeManagement() {
 
   const handleAddEpisode = async () => {
     try {
-      const response = await fetch('/api/admin/episodes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
 
-      if (response.ok) {
-        toast.success('Episode added successfully');
-        setFormData({ title: '', anime_id: '', episode_number: 0, air_date: '' });
-        setOpenDialog(false);
-        fetchEpisodes();
-      } else {
-        toast.error('Failed to add episode');
-      }
+      const { error } = await supabase
+        .from('episodes')
+        .insert([formData]);
+
+      if (error) throw error;
+      toast.success('Episode added successfully');
+      setFormData({ title: '', anime_id: '', episode_number: 0, air_date: '' });
+      setOpenDialog(false);
+      fetchEpisodes();
     } catch (error) {
       toast.error('Error adding episode');
       console.error(error);
