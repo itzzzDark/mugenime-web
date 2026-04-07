@@ -31,11 +31,16 @@ export default function AuditLogsPage() {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/audit-logs');
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data.logs);
-      }
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setLogs(data || []);
     } catch (error) {
       toast.error('Failed to fetch audit logs');
       console.error(error);

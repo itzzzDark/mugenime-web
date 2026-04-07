@@ -1,4 +1,4 @@
-import { fetchAnime } from "@/lib/api";
+import { getAnimeBySlug } from "@/lib/api";
 import { BatchResponse } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,9 +11,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Memanggil fungsi fetchAnime yang ada di lib/api.ts
-    // Endpoint: /anime/batch/:slug
-    const data = await fetchAnime<BatchResponse>(`anime/batch/${slug}`);
+    const anime = await getAnimeBySlug(slug);
+    if (!anime) {
+      return NextResponse.json({ error: "Anime not found" }, { status: 404 });
+    }
+    
+    const data: BatchResponse = {
+      anime,
+      episodes: anime.episodes || [],
+    };
     return NextResponse.json({ data });
   } catch (error) {
     console.error("[API Batch Error]", error);

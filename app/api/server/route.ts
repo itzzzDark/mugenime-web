@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { fetchAnime } from "@/lib/api";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -11,10 +11,22 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const endpoint = `anime/server/${serverId}`;
-    const response = await fetchAnime<{ url: string }>(endpoint);
+    const supabase = await createClient();
+    
+    const { data, error } = await supabase
+      .from("streaming_links")
+      .select("url")
+      .eq("id", serverId)
+      .single();
 
-    return NextResponse.json({ url: response.url });
+    if (error || !data) {
+      return NextResponse.json(
+        { error: "Link tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ url: data.url });
   } catch (error: any) {
     console.error("[API Server Proxy Error]", error);
     return NextResponse.json(
