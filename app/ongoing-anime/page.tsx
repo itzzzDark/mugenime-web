@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { OngoingResponse } from "@/lib/types";
+import { getOngoingAnimes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -19,22 +18,34 @@ export default async function OngoingPage({
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const daysMap = [
-    "Minggu",
-    "Senin",
-    "Selasa",
-    "Rabu",
-    "Kamis",
-    "Jumat",
-    "Sabtu",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
   ];
   const currentDayName = daysMap[new Date().getDay()];
 
-  const response = await fetchAnime<OngoingResponse>(
-    `anime/ongoing-anime?page=${currentPage}`,
-  );
+  // Fetch all ongoing animes from database
+  const allAnimes = await getOngoingAnimes(10000);
+  
+  // Simple client-side pagination
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(allAnimes.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const animeList = allAnimes.slice(startIdx, endIdx);
 
-  const { pagination, animeList } = response;
-  const { totalPages } = pagination;
+  // Mock pagination object for compatibility
+  const pagination = {
+    hasPrevPage: currentPage > 1,
+    hasNextPage: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    totalPages,
+  };
 
   // --- LOGIC PAGINATION DESKTOP  ---
   const generateDesktopPagination = () => {
@@ -103,11 +114,10 @@ export default async function OngoingPage({
                   Anime Ongoing
                 </div>
                 <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                  Anime <span className="text-primary">Sedang Tayang</span>
+                  <span className="text-primary">Currently Airing</span> Anime
                 </h1>
                 <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl">
-                  Daftar anime musim ini yang sedang on-going. Pantau episode
-                  terbaru favoritmu secara real-time agar tidak ketinggalan!
+                  This season&apos;s ongoing anime series. Stay updated with the latest episodes in real-time!
                 </p>
               </div>
             </div>
@@ -117,7 +127,7 @@ export default async function OngoingPage({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-all duration-500 group-hover:bg-orange-500/20" />
                 <div className="relative z-10 flex items-center gap-1.5 text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">
                   <Calendar className="w-3 h-3" />
-                  HARI INI
+                  TODAY
                 </div>
                 <div className="relative z-10">
                   <span className="text-4xl md:text-5xl font-black tracking-tighter text-primary">
@@ -142,13 +152,12 @@ export default async function OngoingPage({
         {animeList && animeList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
             {animeList.map((anime) => (
-              <OngoingCard key={anime.animeId} anime={anime} />
+              <OngoingCard key={anime.id} anime={anime} />
             ))}
           </div>
         ) : (
           <div className="text-center py-20 text-muted-foreground">
-            Data tidak ditemukan. Silakan coba refresh atau kembali ke halaman
-            1.
+            No data found. Please refresh or return to page 1.
           </div>
         )}
 
@@ -169,7 +178,7 @@ export default async function OngoingPage({
               {pagination.hasPrevPage ? (
                 <Link
                   href={`/ongoing-anime?page=${pagination.prevPage}`}
-                  aria-label="Halaman Sebelumnya"
+                  aria-label="Previous Page"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Link>
@@ -212,7 +221,7 @@ export default async function OngoingPage({
               {pagination.hasNextPage ? (
                 <Link
                   href={`/ongoing-anime?page=${pagination.nextPage}`}
-                  aria-label="Halaman Selanjutnya"
+                  aria-label="Next Page"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -232,11 +241,11 @@ export default async function OngoingPage({
             >
               {pagination.hasPrevPage ? (
                 <Link href={`/ongoing-anime?page=${pagination.prevPage}`}>
-                  <ChevronLeft className="w-4 h-4" /> Sebelumnya
+                  <ChevronLeft className="w-4 h-4" /> Previous
                 </Link>
               ) : (
                 <span className="flex items-center gap-1.5">
-                  <ChevronLeft className="w-4 h-4" /> Sebelumnya
+                  <ChevronLeft className="w-4 h-4" /> Previous
                 </span>
               )}
             </Button>
@@ -282,11 +291,11 @@ export default async function OngoingPage({
             >
               {pagination.hasNextPage ? (
                 <Link href={`/ongoing-anime?page=${pagination.nextPage}`}>
-                  Selanjutnya <ChevronRight className="w-4 h-4" />
+                  Next <ChevronRight className="w-4 h-4" />
                 </Link>
               ) : (
                 <span className="flex items-center gap-1.5">
-                  Selanjutnya <ChevronRight className="w-4 h-4" />
+                  Next <ChevronRight className="w-4 h-4" />
                 </span>
               )}
             </Button>

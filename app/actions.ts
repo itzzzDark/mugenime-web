@@ -1,28 +1,13 @@
 "use server";
 
-import { fetchAnime } from "@/lib/api";
-import { AnimeDetail, SearchResult } from "@/lib/types";
-
-interface ApiSearchRawItem {
-  title: string;
-  poster: string;
-  status: string;
-  score: string;
-  animeId: string;
-  genreList: { title: string; genreId: string }[];
-}
-
-interface ApiSearchResponse {
-  animeList: ApiSearchRawItem[];
-}
+import { getAnimeBySlug, getAnimes } from "@/lib/api";
+import { SearchResult } from "@/lib/types";
 
 export async function getAnimeDetailAction(
   slug: string
-): Promise<AnimeDetail | null> {
+): Promise<any | null> {
   try {
-    const data = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`, {
-      next: { revalidate: 86400 }, // Cache 24 jam (ISR)
-    });
+    const data = await getAnimeBySlug(slug);
     return data;
   } catch (error) {
     console.error(`Gagal fetch detail untuk ${slug}:`, error);
@@ -36,27 +21,27 @@ export async function searchAnimeAction(
   if (!keyword || keyword.trim().length < 3) return [];
 
   try {
-    // 1. Fetch data
-    // Karena lib/api.ts otomatis return json.data, maka tipe kembaliannya adalah { animeList: [...] }
-    const res = await fetchAnime<ApiSearchResponse>(
-      `anime/search/${encodeURIComponent(keyword)}`
+    // Fetch all animes and filter by keyword on server-side
+    const allAnimes = await getAnimes({ limit: 10000 });
+
+    // Filter animes by title or Japanese title
+    const filtered = allAnimes.filter(
+      (anime) =>
+        anime.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        (anime.japanese_title &&
+          anime.japanese_title.toLowerCase().includes(keyword.toLowerCase()))
     );
 
-    // 2. Cek apakah animeList ada dan berbentuk array
-    if (res && Array.isArray(res.animeList)) {
-      // 3. Lakukan Mapping dari format API ke format SearchResult (Frontend)
-      return res.animeList.map((item) => ({
-        title: item.title,
-        slug: item.animeId, // Mapping: animeId -> slug
-        poster: item.poster,
-        status: item.status,
-        rating: item.score, // Mapping: score -> rating
-        genres: item.genreList, // Mapping: genreList -> genres
-        url: `/anime/${item.animeId}`,
-      }));
-    }
-
-    return [];
+    // Map to SearchResult format
+    return filtered.slice(0, 20).map((anime: any) => ({
+      title: anime.title,
+      slug: anime.slug,
+      poster: anime.poster_url,
+      status: anime.status,
+      rating: anime.score?.toString() || "0",
+      genres: anime.genres || [],
+      url: `/anime/${anime.slug}`,
+    }));
   } catch (error) {
     console.error("Search Error:", error);
     return [];

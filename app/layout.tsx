@@ -7,6 +7,8 @@ import NextTopLoader from "nextjs-toploader";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/lib/auth-context";
+import { AdminProvider } from "@/lib/admin-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,9 +23,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Mugenime - Nonton Anime Subtitle Indonesia Gratis",
+  title: "Mugenime - Free Anime Streaming",
   description:
-    "Nonton anime subtitle Indonesia terbaru dan terlengkap secara gratis di Mugenime. Streaming anime favoritmu dengan kualitas HD tanpa iklan mengganggu.",
+    "Watch the latest anime with subtitles on Mugenime. Stream your favorite anime in HD quality without ads.",
   icons: {
     icon: ["app/icon.png"],
     apple: ["app/icon.png"],
@@ -42,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="id"
+      lang="en"
       suppressHydrationWarning
       className={`${inter.variable} ${outfit.variable}`}
     >
@@ -53,12 +55,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextTopLoader color="#4f39f6" />
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <Toaster position="top-center" richColors />
-          <Analytics />
+          <AdminProvider>
+            <AuthProvider>
+              <NextTopLoader color="#4f39f6" />
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+              <Toaster position="top-center" richColors />
+              <Analytics />
+            </AuthProvider>
+          </AdminProvider>
         </ThemeProvider>
       </body>
     </html>

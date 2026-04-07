@@ -17,6 +17,8 @@ import {
   History,
   Sun,
   Moon,
+  User,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,20 +39,24 @@ import SearchInput from "./searchInput";
 import Image from "next/image";
 import { motion } from "motion/react";
 import { ModeToggle } from "./modeToggle";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
-  { name: "Beranda", href: "/", icon: Home },
-  { name: "Jadwal", href: "/jadwal-anime", icon: Calendar },
+  { name: "Home", href: "/", icon: Home },
+  { name: "Schedule", href: "/jadwal-anime", icon: Calendar },
   { name: "Ongoing", href: "/ongoing-anime", icon: Zap },
   { name: "Completed", href: "/completed-anime", icon: CheckCircle },
-  { name: "List Anime", href: "/list-anime", icon: List },
-  { name: "Genre", href: "/genre-anime", icon: Tags },
+  { name: "List", href: "/list-anime", icon: List },
+  { name: "Genres", href: "/genre-anime", icon: Tags },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, signOut } = useAuth();
 
   // Logic Theme
   const { setTheme, resolvedTheme } = useTheme();
@@ -117,6 +123,13 @@ export default function Navbar() {
         ? "bg-primary/20"
         : "bg-secondary group-hover:bg-background shadow-xs",
     );
+
+  const handleLogout = async () => {
+    await signOut();
+    setIsOpen(false);
+    router.push('/');
+    router.refresh();
+  };
 
   return (
     <header
@@ -208,13 +221,13 @@ export default function Navbar() {
                     size="icon"
                     className="rounded-full w-8 h-8 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
                   >
-                    <Link href="/history" aria-label="Riwayat Tontonan">
+                    <Link href="/history" aria-label="Watch History">
                       <History className="w-4 h-4" />
                     </Link>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs font-medium">
-                  <p>Riwayat Tontonan</p>
+                  <p>Watch History</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -227,15 +240,36 @@ export default function Navbar() {
                     size="icon"
                     className="rounded-full w-8 h-8 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
                   >
-                    <Link href="/bookmark" aria-label="Lihat Bookmark">
+                    <Link href="/bookmark" aria-label="View Bookmarks">
                       <Bookmark className="w-4 h-4" />
                     </Link>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs font-medium">
-                  <p>Bookmark Saya</p>
+                  <p>My Bookmarks</p>
                 </TooltipContent>
               </Tooltip>
+
+              {/* Profile Button */}
+              {user && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full w-8 h-8 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+                    >
+                      <Link href="/profile" aria-label="My Profile">
+                        <User className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs font-medium">
+                    <p>My Profile</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
 
               {/* Theme Toggle Desktop */}
               <Tooltip>
@@ -248,10 +282,48 @@ export default function Navbar() {
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs font-medium">
-                  <p>Ganti Tema</p>
+                  <p>Toggle Theme</p>
                 </TooltipContent>
               </Tooltip>
+
+              {/* Logout Button */}
+              {user && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleLogout}
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full w-8 h-8 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs font-medium">
+                    <p>Sign Out</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </TooltipProvider>
+
+            {/* Auth Buttons */}
+            {!user && (
+              <div className="flex items-center gap-1">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="rounded-full text-sm h-8"
+                >
+                  <Link href="/auth/login">Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="rounded-full text-sm h-8"
+                >
+                  <Link href="/auth/signup">Sign Up</Link>
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* MOBILE MENU TRIGGER */}
@@ -289,7 +361,7 @@ export default function Navbar() {
                   {/* SEARCH SECTION */}
                   <div>
                     <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                      Pencarian
+                      Search
                     </h4>
                     <SearchInput onSearchSubmit={() => setIsOpen(false)} />
                   </div>
@@ -313,14 +385,14 @@ export default function Navbar() {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold text-foreground">
-                          Tampilan Aplikasi
+                          App Theme
                         </span>
                         <span className="text-[10px] text-muted-foreground">
                           {mounted
                             ? resolvedTheme === "dark"
-                              ? "Mode Gelap"
-                              : "Mode Terang"
-                            : "Memuat tema..."}
+                              ? "Dark Mode"
+                              : "Light Mode"
+                            : "Loading..."}
                         </span>
                       </div>
                     </div>
@@ -340,7 +412,7 @@ export default function Navbar() {
 
                 <div className="p-6 pt-2 space-y-1">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    Menu Utama
+                    Main Menu
                   </h4>
 
                   {/* Nav Links */}
@@ -372,7 +444,7 @@ export default function Navbar() {
                     <div className={getMobileIconContainerClass("/history")}>
                       <History className="w-4.5 h-4.5" />
                     </div>
-                    Riwayat Tontonan
+                    Watch History
                   </Link>
 
                   {/* Bookmark Item */}
@@ -384,8 +456,67 @@ export default function Navbar() {
                     <div className={getMobileIconContainerClass("/bookmark")}>
                       <Bookmark className="w-4.5 h-4.5" />
                     </div>
-                    Bookmark Saya
+                    My Bookmarks
                   </Link>
+
+                  {user && (
+                    <>
+                      <div className="my-2 border-t border-border/50" />
+
+                      {/* Profile Item */}
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsOpen(false)}
+                        className={getMobileItemClass("/profile")}
+                      >
+                        <div className={getMobileIconContainerClass("/profile")}>
+                          <User className="w-4.5 h-4.5" />
+                        </div>
+                        My Profile
+                      </Link>
+
+                      {/* Logout Item */}
+                      <button
+                        onClick={handleLogout}
+                        className={getMobileItemClass("")}
+                      >
+                        <div className={getMobileIconContainerClass("")}>
+                          <LogOut className="w-4.5 h-4.5" />
+                        </div>
+                        Sign Out
+                      </button>
+                    </>
+                  )}
+
+                  {!user && (
+                    <>
+                      <div className="my-2 border-t border-border/50" />
+
+                      {/* Login Item */}
+                      <Link
+                        href="/auth/login"
+                        onClick={() => setIsOpen(false)}
+                        className={getMobileItemClass("/auth/login")}
+                      >
+                        <div className={getMobileIconContainerClass("/auth/login")}>
+                          <User className="w-4.5 h-4.5" />
+                        </div>
+                        Sign In
+                      </Link>
+
+                      {/* Signup Item */}
+                      <Link
+                        href="/auth/signup"
+                        onClick={() => setIsOpen(false)}
+                        className={getMobileItemClass("/auth/signup")}
+                      >
+                        <div className={getMobileIconContainerClass("/auth/signup")}>
+                          <User className="w-4.5 h-4.5" />
+                        </div>
+                        Create Account
+                      </Link>
+                    </>
+                  )}
                 </div>
 
                 {/* Footer */}

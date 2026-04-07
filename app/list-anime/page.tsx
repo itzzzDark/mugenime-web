@@ -1,13 +1,22 @@
-import { fetchAnime } from "@/lib/api";
-import { AnimeListResponse } from "@/lib/types";
+import { getAnimes } from "@/lib/api";
 import Link from "next/link";
 import { Library, ArrowUpRight } from "lucide-react";
 
 export const revalidate = 86400;
 
 export default async function ListAnimePage() {
-  const response = await fetchAnime<AnimeListResponse>("anime/unlimited");
-  const animeGroups = response.list;
+  const allAnimes = await getAnimes({ limit: 10000 });
+  
+  // Group animes by first letter
+  const animeGroups = Array.from({ length: 26 }, (_, i) => {
+    const letter = String.fromCharCode(65 + i);
+    return {
+      startWith: letter,
+      animeList: allAnimes
+        .filter(anime => anime.title.toUpperCase().startsWith(letter))
+        .sort((a, b) => a.title.localeCompare(b.title))
+    };
+  }).filter(group => group.animeList.length > 0);
 
   return (
     <div className="min-h-screen pb-20 py-10 bg-background">
@@ -20,21 +29,19 @@ export default async function ListAnimePage() {
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            {/* KONTEN UTAMA */}
+            {/* MAIN CONTENT */}
             <div className="space-y-4 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
                 <Library className="w-3.5 h-3.5" />
-                List Anime
+                Anime List
               </div>
 
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                Daftar Anime <span className="text-primary">A-Z</span>
+                Anime Directory <span className="text-primary">A-Z</span>
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                Indeks lengkap seluruh anime yang tersedia di Mugenime. Gunakan
-                navigasi cepat di bawah untuk mencari judul favoritmu
-                berdasarkan abjad.
+                Complete index of all available anime. Use the quick navigation below to search your favorite titles alphabetically.
               </p>
             </div>
 
@@ -52,7 +59,7 @@ export default async function ListAnimePage() {
                   +
                 </span>
                 <span className="text-[10px] text-muted-foreground mt-1">
-                  Judul Anime
+                  Anime Titles
                 </span>
               </div>
             </div>
@@ -106,8 +113,8 @@ export default async function ListAnimePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {group.animeList.map((anime) => (
                   <Link
-                    key={anime.animeId}
-                    href={`/anime/${anime.animeId}`}
+                    key={anime.id}
+                    href={`/anime/${anime.slug}`}
                     className="group flex items-start justify-between p-4 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-muted/30 hover:shadow-md transition-all duration-300"
                   >
                     <span className="text-sm font-medium text-foreground group-hover:text-primary line-clamp-2 leading-relaxed">

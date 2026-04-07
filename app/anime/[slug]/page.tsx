@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { AnimeDetail, BatchResponse } from "@/lib/types";
+import { getAnimeBySlug, getAnimeEpisodes } from "@/lib/api";
 import AnimeCard from "@/components/animeCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,35 +40,15 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-function isAnimeDetail(data: unknown): data is AnimeDetail {
-  if (typeof data !== "object" || data === null) return false;
-  const d = data as AnimeDetail;
-  return (
-    typeof d.title === "string" &&
-    (typeof d.synopsis === "object" || typeof d.synopsis === "string") &&
-    "episodeList" in d &&
-    Array.isArray(d.episodeList)
-  );
-}
-
 const getProxyUrl = (url: string) =>
   `/api/image-proxy?url=${encodeURIComponent(url)}`;
-
-const getSynopsisText = (synopsis: AnimeDetail["synopsis"]) => {
-  if (typeof synopsis === "string") return synopsis;
-  if (synopsis && Array.isArray(synopsis.paragraphs)) {
-    return synopsis.paragraphs.join(" ");
-  }
-  return "";
-};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const responseData = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
-    if (!isAnimeDetail(responseData)) return { title: "Anime Not Found" };
+    const anime = await getAnimeBySlug(slug);
+    if (!anime) return { title: "Anime Not Found" };
 
-    const anime = responseData;
     const title = `Nonton ${anime.title} Sub Indo Gratis - Mugenime`;
     const description = `Streaming anime ${anime.title} Subtitle Indonesia gratis resolusi 1080p, 720p, 480p. Download ${anime.title} sub indo lengkap di Mugenime.`;
 
@@ -82,8 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         title: title,
         description: description,
-        // images: [getProxyUrl(anime.poster)],
-        images: [anime.poster],
+        images: [anime.poster_url || ""],
         type: "video.tv_show",
         siteName: "Mugenime",
       },
@@ -91,8 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         card: "summary_large_image",
         title: title,
         description: description,
-        // images: [getProxyUrl(anime.poster)],
-        images: [anime.poster],
+        images: [anime.poster_url || ""],
       },
     };
   } catch (e) {
@@ -103,47 +80,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AnimeDetailPage({ params }: Readonly<Props>) {
   const { slug } = await params;
-  let responseData: unknown;
 
   try {
-    responseData = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
-  } catch (error) {
-    console.error("Failed to fetch anime detail:", error);
-    return notFound();
-  }
+    const anime = await getAnimeBySlug(slug);
+    if (!anime) return notFound();
 
-  if (!isAnimeDetail(responseData)) {
-    return notFound();
-  }
+    const episodes = await getAnimeEpisodes(anime.id);
+    const episodeLists = episodes || [];
+    const firstEpisode = episodeLists.length > 0 ? episodeLists[0] : null;
+    const genres = anime.genres || [];
 
-  const anime = responseData;
-  const synopsisText = getSynopsisText(anime.synopsis);
-
-  let batchData: BatchResponse | null = null;
-  if (anime.batch?.batchId) {
-    try {
-      batchData = await fetchAnime<BatchResponse>(
-        `anime/batch/${anime.batch.batchId}`,
-      );
-    } catch (error) {
-      console.error("Gagal mengambil data batch:", error);
-    }
-  }
-
-  const episodeLists = anime.episodeList || [];
-  const firstEpisode = episodeLists.length > 0 ? episodeLists.at(-1) : null;
-  const genres = anime.genreList || [];
-
-  const genreString = genres.map((g) => g.title).join(", ");
+  const genreString = genres.map((g) => g.name).join(", ");
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TVSeries",
     name: anime.title,
-    // image: getProxyUrl(anime.poster),
-    image: anime.poster,
-    description: synopsisText,
-    numberOfEpisodes: anime.episodes || episodeLists.length.toString(),
+    image: anime.poster_url,
+    description: anime.synopsis || "",
+    numberOfEpisodes: anime.episodes_count || episodeLists.length,
     genre: genreString,
     potentialAction: {
       "@type": "WatchAction",
@@ -154,7 +109,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
   const animeData = {
     title: anime.title,
     slug: slug,
-    poster: anime.poster,
+    poster: anime.poster_url,
     type: anime.type,
     rating: anime.score,
     studios: anime.studios,
@@ -172,9 +127,8 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src={anime.poster ?? ""}
+            src={anime.poster_url ?? ""}
             alt="Background"
-            // src={getProxyUrl(anime.poster)}
             fill
             className="object-cover opacity-50 dark:opacity-20 blur-xl scale-110"
             priority
@@ -198,8 +152,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
               {/* Poster Card */}
               <div className="group relative aspect-3/4 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-border bg-muted">
                 <Image
-                  // src={getProxyUrl(anime.poster)}
-                  src={anime.poster ?? ""}
+                  src={anime.poster_url ?? ""}
                   alt={anime.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -226,9 +179,9 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                     size="lg"
                     className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
                   >
-                    <Link href={`/watch/${slug}/${firstEpisode.episodeId}`}>
+                    <Link href={`/watch/${slug}/${firstEpisode.slug}`}>
                       <Play className="w-5 h-5 mr-2 fill-current" />
-                      Mulai Nonton (Episode 1)
+                      Mulai Nonton (Episode {firstEpisode.episode_number})
                     </Link>
                   </Button>
                 ) : (
@@ -264,7 +217,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                   <InfoRow
                     icon={<Layers className="w-4 h-4" />}
                     label="Episode"
-                    value={anime.episodes ?? `${episodeLists.length}`}
+                    value={anime.episodes_count?.toString() ?? `${episodeLists.length}`}
                   />
                   <InfoRow
                     icon={<Calendar className="w-4 h-4" />}
@@ -274,7 +227,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                   <InfoRow
                     icon={<Clock className="w-4 h-4" />}
                     label="Durasi"
-                    value={anime.duration}
+                    value={anime.duration?.toString()}
                   />
                   <InfoRow
                     icon={<Users className="w-4 h-4" />}
@@ -333,23 +286,23 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
               </h1>
 
               {/* --- JAPANESE TITLE --- */}
-              {anime.japanese && (
+              {anime.japanese_title && (
                 <p className="text-lg text-muted-foreground font-medium font-serif italic">
-                  {anime.japanese}
+                  {anime.japanese_title}
                 </p>
               )}
 
               <div className="flex flex-wrap gap-2 pt-2">
-                {genres.map((genre) => (
+                {genres.map((genre: any) => (
                   <Link
-                    key={genre.genreId}
-                    href={`/genre-anime/${genre.genreId}`}
+                    key={genre.id}
+                    href={`/genre-anime/${genre.slug}`}
                   >
                     <Badge
                       variant="secondary"
                       className="px-3 py-1 text-sm bg-secondary text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer border border-transparent hover:border-primary/20"
                     >
-                      {genre.title}
+                      {genre.name}
                     </Badge>
                   </Link>
                 ))}
@@ -363,7 +316,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                 Sinopsis
               </h3>
               <div className="text-muted-foreground leading-relaxed text-base">
-                {synopsisText || "Sinopsis belum tersedia untuk anime ini."}
+                {anime.synopsis || "Sinopsis belum tersedia untuk anime ini."}
               </div>
             </div>
 
@@ -384,10 +337,10 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
 
               {episodeLists.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  {episodeLists.toReversed().map((ep) => (
+                  {[...episodeLists].reverse().map((ep: any) => (
                     <Link
-                      key={ep.episodeId}
-                      href={`/watch/${slug}/${ep.episodeId}`}
+                      key={ep.id}
+                      href={`/watch/${slug}/${ep.slug}`}
                       className="group relative flex items-center justify-center p-3 h-16 bg-card border border-border hover:border-primary/50 rounded-lg transition-all hover:shadow-md hover:shadow-primary/5 overflow-hidden"
                     >
                       {/* Hover Effect Background */}
@@ -398,7 +351,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                           Episode
                         </span>
                         <span className="text-lg font-bold text-foreground group-hover:text-primary">
-                          {ep.eps}
+                          {ep.episode_number}
                         </span>
                       </div>
 
@@ -418,27 +371,7 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
               )}
             </div>
 
-            {/* Batch Download */}
-            {batchData && (
-              <div className="animate-in fade-in slide-in-from-bottom-4">
-                <BatchDownload batchData={batchData} />
-              </div>
-            )}
 
-            {/* Recommendations */}
-            {anime.recommendations && anime.recommendations.length > 0 && (
-              <div className="space-y-6 pt-4">
-                <h3 className="text-xl font-bold text-foreground flex items-center">
-                  <span className="w-1 h-6 bg-pink-500 rounded-full mr-3"></span>{" "}
-                  Rekomendasi
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-                  {anime.recommendations.map((rec) => (
-                    <AnimeCard key={rec.animeId} anime={rec} />
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* SEO Keywords Card */}
             <div className="bg-card rounded-xl p-6 border border-border space-y-4">
@@ -457,7 +390,6 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                   disini.
                 </div>
               </div>
-
               <div className="pt-2 border-t border-border">
                 <p className="text-xs text-muted-foreground/80 leading-normal">
                   <span className="font-bold text-muted-foreground">

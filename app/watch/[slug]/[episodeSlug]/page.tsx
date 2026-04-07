@@ -1,6 +1,5 @@
 import WatchView from "@/components/watchView";
-import { fetchAnime } from "@/lib/api";
-import { AnimeDetail, EpisodeDetail, BatchResponse } from "@/lib/types";
+import { getAnimeBySlug, getAnimeEpisodes } from "@/lib/api";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -11,14 +10,12 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { episodeSlug } = await params;
+  const { slug } = await params;
   try {
-    const data = await fetchAnime<EpisodeDetail>(
-      `anime/episode/${episodeSlug}`,
-    );
+    const anime = await getAnimeBySlug(slug);
     return {
-      title: `Nonton ${data.title} - Mugenime`,
-      description: `Streaming ${data.title} subtitle Indonesia gratis.`,
+      title: `Nonton ${anime.title} - Mugenime`,
+      description: `Streaming ${anime.title} subtitle Indonesia gratis.`,
     };
   } catch {
     return { title: "Episode Not Found" };
@@ -28,51 +25,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WatchPage({ params }: Readonly<Props>) {
   const { episodeSlug, slug } = await params;
 
-  let episodeData: EpisodeDetail | null = null;
-  let animeData: AnimeDetail | null = null;
-  let batchData: BatchResponse | null = null;
-
   try {
-    // 1. Fetch Data Episode
-    episodeData = await fetchAnime<EpisodeDetail>(
-      `anime/episode/${episodeSlug}`,
+    // Fetch anime detail
+    const animeData = await getAnimeBySlug(slug);
+    if (!animeData) return notFound();
+
+    // Get episodes for this anime
+    const episodes = await getAnimeEpisodes(animeData.id);
+    
+    // Find the specific episode by slug
+    const episodeData = episodes.find((ep: any) => ep.slug === episodeSlug);
+    if (!episodeData) return notFound();
+
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <WatchView
+          episode={episodeData}
+          animeDetail={animeData}
+          slug={slug}
+          episodeSlug={episodeSlug}
+        />
+      </div>
     );
-
-    try {
-      // 2. Fetch Data Anime Detail
-      animeData = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
-
-      // 3. Fetch Batch (Jika ada batchId di animeDetail)
-      if (animeData?.batch?.batchId) {
-        try {
-          batchData = await fetchAnime<BatchResponse>(
-            `anime/batch/${animeData.batch.batchId}`,
-          );
-        } catch (error_) {
-          console.warn("[WatchPage] Gagal fetch batch:", error_);
-        }
-      }
-    } catch (err) {
-      console.warn(`[Sidebar Info] Gagal fetch detail anime: ${slug}`, err);
-    }
   } catch (error) {
     console.error("Error fetching episode data:", error);
     return notFound();
   }
-
-  if (!episodeData) {
-    return notFound();
-  }
-
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      <WatchView
-        episode={episodeData}
-        animeDetail={animeData}
-        batchData={batchData}
-        slug={slug}
-        episodeSlug={episodeSlug}
-      />
-    </div>
-  );
 }

@@ -31,9 +31,9 @@ export default function Footer() {
                 </div>
               </Link>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
-                Download dan streaming anime subtitle Indonesia lengkap dalam
-                format Mp4 dan MKV dengan berbagai resolusi di platform gratis,
-                tanpa iklan yang mengganggu, dan hemat kuota.
+                Download and stream anime with subtitles in complete quality on
+                our free platform. Available in Mp4 and MKV formats with multiple
+                resolutions, no ads, and data-efficient streaming.
               </p>
             </div>
 

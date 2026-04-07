@@ -51,20 +51,20 @@ export default async function SearchPage({
                 {/* Badge */}
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
                   <Search className="w-3.5 h-3.5" />
-                  Hasil Pencarian
+                  Search Results
                 </div>
 
                 {/* Title */}
                 <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                  Menampilkan hasil: <br />
+                  Results for: <br />
                   <span className="text-primary">&quot;{query}&quot;</span>
                 </h1>
 
                 {/* Description */}
                 <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl">
                   {hasResults
-                    ? `Ditemukan ${results.length} judul anime yang cocok dengan kata kunci pencarian Anda. Klik pada kartu untuk mulai menonton.`
-                    : `Maaf, kami tidak dapat menemukan anime dengan kata kunci tersebut. Coba gunakan judul lain atau periksa ejaan.`}
+                    ? `Found ${results.length} anime titles matching your search query. Click on any title to start watching.`
+                    : `Sorry, we couldn't find any anime matching that search. Try a different title or check your spelling.`}
                 </p>
               </div>
             </div>
@@ -76,7 +76,7 @@ export default async function SearchPage({
 
                 <div className="relative z-10 flex items-center gap-1.5 text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">
                   <Hash className="w-3 h-3" />
-                  TOTAL DITEMUKAN
+                  TOTAL FOUND
                 </div>
 
                 <div className="relative z-10">

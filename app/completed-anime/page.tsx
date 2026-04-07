@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { CompleteAnimeResponse } from "@/lib/types";
+import { getCompletedAnimes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -18,13 +17,24 @@ export default async function CompletedPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
 
-  // 2. Fetch Data
-  const response = await fetchAnime<CompleteAnimeResponse>(
-    `anime/complete-anime/?page=${currentPage}`,
-  );
+  // 2. Fetch Data from database
+  const allAnimes = await getCompletedAnimes(10000);
+  
+  // Simple client-side pagination
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(allAnimes.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const animeList = allAnimes.slice(startIdx, endIdx);
 
-  const { pagination, animeList } = response;
-  const { totalPages } = pagination;
+  // Mock pagination object
+  const pagination = {
+    hasPrevPage: currentPage > 1,
+    hasNextPage: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    totalPages,
+  };
 
   // --- LOGIC PAGINATION DESKTOP (Full) ---
   const generateDesktopPagination = () => {
@@ -87,24 +97,23 @@ export default async function CompletedPage({ searchParams }: PageProps) {
               {/* Label */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Anime Tamat
+                Completed
               </div>
 
               {/* Title */}
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight font-heading text-foreground">
-                Anime <span className="text-primary">Selesai Tayang</span>
+                <span className="text-primary">Completed</span> Anime
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                Koleksi lengkap anime yang sudah tamat. Nikmati maraton nonton
-                tanpa perlu menunggu episode baru rilis setiap minggu.
+                Complete collection of finished anime series. Enjoy binge watching without waiting for new episodes every week.
               </p>
             </div>
 
             {/* Page Indicator Widget */}
             <div className="flex flex-col items-end justify-center px-6 py-3 rounded-2xl bg-card/60 border border-border backdrop-blur-md">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Halaman
+                Page
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-primary">
@@ -122,7 +131,7 @@ export default async function CompletedPage({ searchParams }: PageProps) {
         {animeList && animeList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
             {animeList.map((anime) => (
-              <CompletedCard key={anime.animeId} anime={anime} />
+              <CompletedCard key={anime.id} anime={anime} />
             ))}
           </div>
         ) : (

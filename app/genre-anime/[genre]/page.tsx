@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { GenreDetailResponse } from "@/lib/types";
+import { getAnimes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Layers, ChevronLeft, ChevronRight, Hash } from "lucide-react";
 import Link from "next/link";
@@ -22,18 +21,25 @@ export default async function GenreDetailPage({
   const { page } = await searchParams;
   const currentPage = Number(page) || 1;
 
-  let response: GenreDetailResponse;
-  try {
-    response = await fetchAnime<GenreDetailResponse>(
-      `anime/genre/${genre}?page=${currentPage}`,
-    );
-  } catch (error) {
-    console.log(error);
-    return notFound();
-  }
+  // Get all animes and filter by genre
+  const allAnimes = await getAnimes({ limit: 10000 });
+  
+  // Simple filtering - in the future, implement proper genre filtering in database
+  const animeList = allAnimes;
+  
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(animeList.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const paginatedAnimes = animeList.slice(startIdx, endIdx);
 
-  const { animeList, pagination } = response;
-  const { totalPages } = pagination;
+  const pagination = {
+    hasPrevPage: currentPage > 1,
+    hasNextPage: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    totalPages,
+  };
 
   const genreName =
     genre.charAt(0).toUpperCase() + genre.slice(1).replaceAll("-", " ");
@@ -130,10 +136,10 @@ export default async function GenreDetailPage({
         </div>
 
         {/* --- GRID ANIME --- */}
-        {animeList && animeList.length > 0 ? (
+        {paginatedAnimes && paginatedAnimes.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-            {animeList.map((anime) => (
-              <GenreCard key={anime.animeId} anime={anime} />
+            {paginatedAnimes.map((anime) => (
+              <GenreCard key={anime.id} anime={anime} />
             ))}
           </div>
         ) : (

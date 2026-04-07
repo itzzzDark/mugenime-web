@@ -1,5 +1,4 @@
-import { fetchAnime } from "@/lib/api";
-import { HomeData } from "@/lib/types";
+import { getOngoingAnimes, getCompletedAnimes, recordView } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -8,19 +7,21 @@ import {
   Sparkles,
   ServerCrash,
   Info,
-  MessageCircle, // Icon tambahan untuk section komentar
+  MessageCircle,
 } from "lucide-react";
 import AnimeCard from "@/components/animeCard";
 import { FadeInWrapper, HeroSection } from "@/components/homeSection";
-import CommentSection from "@/components/commentSection"; // Import Component
+import CommentSection from "@/components/commentSection";
 
 export const revalidate = 1800;
 
 export default async function HomePage() {
-  const data = await fetchAnime<HomeData>("anime/home");
-  const heroAnime = data?.ongoing?.animeList[0] ?? null;
-  const ongoingList = data?.ongoing?.animeList.slice(1, 11) ?? [];
-  const completedList = data?.completed?.animeList.slice(0, 10) ?? [];
+  const ongoingList = await getOngoingAnimes(11);
+  const completedList = await getCompletedAnimes(10);
+  
+  const heroAnime = ongoingList[0] ?? null;
+  const displayOngoing = ongoingList.slice(1, 11) ?? [];
+  const displayCompleted = completedList ?? [];
 
   const getProxyUrl = (url: string) =>
     `/api/image-proxy?url=${encodeURIComponent(url)}`;
@@ -29,15 +30,15 @@ export default async function HomePage() {
     {
       id: 1,
       icon: ServerCrash,
-      title: "Info Player Stream",
-      content: "Jika player Pixeldrain error, gunakan opsi server lain.",
+      title: "Stream Player Info",
+      content: "If Pixeldrain player has issues, try another server option.",
       theme: "red",
     },
     {
       id: 2,
       icon: Info,
-      title: "Fitur Komentar (Beta)",
-      content: "Fitur komentar sudah bisa dipakai (Beta)",
+      title: "Comments Feature (Beta)",
+      content: "Comments feature is now available (Beta)",
       theme: "blue",
     },
   ];
@@ -105,7 +106,7 @@ export default async function HomePage() {
                         {item.title}
                         {isAlert && (
                           <span className="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/50 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/10">
-                            Penting
+                            Important
                           </span>
                         )}
                       </h3>
@@ -127,14 +128,13 @@ export default async function HomePage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
                   <Flame className="w-5 h-5" />
-                  <span>Update Terbaru</span>
+                  <span>Latest Updates</span>
                 </div>
                 <h2 className="text-3xl font-black text-foreground tracking-tight">
-                  Sedang Tayang
+                  Currently Airing
                 </h2>
                 <p className="text-muted-foreground max-w-lg">
-                  Daftar anime musim ini yang sedang <i>on-going</i>. Tonton
-                  episode terbarunya sekarang.
+                  This season&apos;s ongoing anime series. Watch the latest episodes now.
                 </p>
               </div>
 
@@ -144,7 +144,7 @@ export default async function HomePage() {
                 className="rounded-full border-border hover:bg-secondary group"
               >
                 <Link href="/ongoing-anime">
-                  Lihat Semua{" "}
+                  View All{" "}
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
@@ -153,8 +153,8 @@ export default async function HomePage() {
 
           {/* Grid Layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-            {ongoingList.map((anime, idx) => (
-              <AnimeCard key={anime.animeId} anime={anime} index={idx} />
+            {displayOngoing.map((anime, idx) => (
+              <AnimeCard key={anime.id} anime={anime} index={idx} />
             ))}
           </div>
         </section>
@@ -166,14 +166,13 @@ export default async function HomePage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 font-bold text-sm uppercase tracking-wider">
                   <Sparkles className="w-5 h-5" />
-                  <span>Maraton Time</span>
+                  <span>Binge Worthy</span>
                 </div>
                 <h2 className="text-3xl font-black text-foreground tracking-tight">
-                  Anime Tamat
+                  Completed Anime
                 </h2>
                 <p className="text-muted-foreground max-w-lg">
-                  Rekomendasi anime yang sudah selesai tayang (Completed). Cocok
-                  buat yang suka maraton!
+                  Recommended completed anime series. Perfect for binge watching!
                 </p>
               </div>
 
@@ -183,7 +182,7 @@ export default async function HomePage() {
                 className="rounded-full border-border hover:bg-secondary group"
               >
                 <Link href="/completed-anime">
-                  Lihat Semua{" "}
+                  View All{" "}
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
@@ -192,8 +191,8 @@ export default async function HomePage() {
 
           {/* Grid Layout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8">
-            {completedList.map((anime, idx) => (
-              <AnimeCard key={anime.animeId} anime={anime} index={idx} />
+            {displayCompleted.map((anime, idx) => (
+              <AnimeCard key={anime.id} anime={anime} index={idx} />
             ))}
           </div>
         </section>
