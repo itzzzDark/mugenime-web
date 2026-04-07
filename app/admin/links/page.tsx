@@ -35,19 +35,19 @@ export default function LinksManagement() {
   const fetchLinks = async () => {
     try {
       setLoading(true);
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
       const [downloadRes, streamingRes] = await Promise.all([
-        supabase.from('download_links').select('*'),
-        supabase.from('streaming_links').select('*'),
+        fetch('/api/admin/download-links'),
+        fetch('/api/admin/streaming-links'),
       ]);
 
-      if (downloadRes.error) throw downloadRes.error;
-      if (streamingRes.error) throw streamingRes.error;
-
-      setDownloadLinks(downloadRes.data || []);
-      setStreamingLinks(streamingRes.data || []);
+      if (downloadRes.ok) {
+        const data = await downloadRes.json();
+        setDownloadLinks(data.links);
+      }
+      if (streamingRes.ok) {
+        const data = await streamingRes.json();
+        setStreamingLinks(data.links);
+      }
     } catch (error) {
       toast.error('Failed to fetch links');
       console.error(error);
@@ -59,17 +59,11 @@ export default function LinksManagement() {
   const handleDeleteDownloadLink = async (id: string) => {
     if (!confirm('Delete this download link?')) return;
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from('download_links')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Link deleted');
-      fetchLinks();
+      const response = await fetch(`/api/admin/download-links/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        toast.success('Link deleted');
+        fetchLinks();
+      }
     } catch (error) {
       toast.error('Error deleting link');
     }
@@ -78,18 +72,11 @@ export default function LinksManagement() {
   const handleDeleteStreamingLink = async (id: string) => {
     if (!confirm('Delete this streaming link?')) return;
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from('streaming_links')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Link deleted');
-      fetchLinks();
-    }
+      const response = await fetch(`/api/admin/streaming-links/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        toast.success('Link deleted');
+        fetchLinks();
+      }
     } catch (error) {
       toast.error('Error deleting link');
     }

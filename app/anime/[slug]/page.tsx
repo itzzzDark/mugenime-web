@@ -390,6 +390,11 @@ export default async function AnimeDetailPage({ params }: Readonly<Props>) {
                   disini.
                 </div>
               </div>
+    } catch (error) {
+      console.error("Failed to fetch anime detail:", error);
+      return notFound();
+    }
+
               <div className="pt-2 border-t border-border">
                 <p className="text-xs text-muted-foreground/80 leading-normal">
                   <span className="font-bold text-muted-foreground">

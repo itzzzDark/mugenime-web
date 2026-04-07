@@ -27,16 +27,11 @@ export default function UserManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('id, email, role, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
+      const response = await fetch('/api/admin/users');
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users);
+      }
     } catch (error) {
       toast.error('Failed to fetch users');
       console.error(error);
@@ -47,18 +42,19 @@ export default function UserManagement() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole }),
+      });
 
-      const { error } = await supabase
-        .from('users')
-        .update({ role: newRole })
-        .eq('id', userId);
-
-      if (error) throw error;
-      toast.success('User role updated');
-      setOpenDialog(false);
-      fetchUsers();
+      if (response.ok) {
+        toast.success('User role updated');
+        setOpenDialog(false);
+        fetchUsers();
+      } else {
+        toast.error('Failed to update user role');
+      }
     } catch (error) {
       toast.error('Error updating user role');
       console.error(error);

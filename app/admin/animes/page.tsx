@@ -40,16 +40,11 @@ export default function AnimeManagement() {
   const fetchAnimes = async () => {
     try {
       setLoading(true);
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { data, error } = await supabase
-        .from('animes')
-        .select('id, title, description, type, status, episode_count, studios, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setAnimes(data || []);
+      const response = await fetch('/api/admin/animes');
+      if (response.ok) {
+        const data = await response.json();
+        setAnimes(data.animes);
+      }
     } catch (error) {
       toast.error('Failed to fetch animes');
       console.error(error);
@@ -60,25 +55,27 @@ export default function AnimeManagement() {
 
   const handleAddAnime = async () => {
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from('animes')
-        .insert([formData]);
-
-      if (error) throw error;
-      toast.success('Anime added successfully');
-      setFormData({
-        title: '',
-        description: '',
-        type: 'TV',
-        status: 'ongoing',
-        episode_count: 0,
-        studios: '',
+      const response = await fetch('/api/admin/animes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
-      setOpenDialog(false);
-      fetchAnimes();
+
+      if (response.ok) {
+        toast.success('Anime added successfully');
+        setFormData({
+          title: '',
+          description: '',
+          type: 'TV',
+          status: 'ongoing',
+          episode_count: 0,
+          studios: '',
+        });
+        setOpenDialog(false);
+        fetchAnimes();
+      } else {
+        toast.error('Failed to add anime');
+      }
     } catch (error) {
       toast.error('Error adding anime');
       console.error(error);
@@ -89,17 +86,16 @@ export default function AnimeManagement() {
     if (!confirm('Are you sure you want to delete this anime?')) return;
 
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const response = await fetch(`/api/admin/animes/${id}`, {
+        method: 'DELETE',
+      });
 
-      const { error } = await supabase
-        .from('animes')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Anime deleted successfully');
-      fetchAnimes();
+      if (response.ok) {
+        toast.success('Anime deleted successfully');
+        fetchAnimes();
+      } else {
+        toast.error('Failed to delete anime');
+      }
     } catch (error) {
       toast.error('Error deleting anime');
       console.error(error);

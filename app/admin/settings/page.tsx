@@ -16,25 +16,24 @@ export default function AdminSettings() {
 
   const handleSaveSettings = async () => {
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const response = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          siteName,
+          siteDescription,
+          maintenanceMode,
+          maxUploadSize: parseInt(maxUploadSize),
+        }),
+      });
 
-      const { error } = await supabase
-        .from('settings')
-        .upsert({
-          key: 'site_config',
-          value: {
-            siteName,
-            siteDescription,
-            maintenanceMode,
-            maxUploadSize: parseInt(maxUploadSize),
-          },
-        });
-
-      if (error) throw error;
-      setSaved(true);
-      toast.success('Settings saved successfully');
-      setTimeout(() => setSaved(false), 3000);
+      if (response.ok) {
+        setSaved(true);
+        toast.success('Settings saved successfully');
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        toast.error('Failed to save settings');
+      }
     } catch (error) {
       toast.error('Error saving settings');
       console.error(error);

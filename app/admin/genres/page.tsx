@@ -27,16 +27,11 @@ export default function GenreManagement() {
   const fetchGenres = async () => {
     try {
       setLoading(true);
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { data, error } = await supabase
-        .from('genres')
-        .select('id, name, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setGenres(data || []);
+      const response = await fetch('/api/admin/genres');
+      if (response.ok) {
+        const data = await response.json();
+        setGenres(data.genres);
+      }
     } catch (error) {
       toast.error('Failed to fetch genres');
       console.error(error);
@@ -48,18 +43,20 @@ export default function GenreManagement() {
   const handleAddGenre = async () => {
     if (!newGenre.trim()) return;
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const response = await fetch('/api/admin/genres', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newGenre }),
+      });
 
-      const { error } = await supabase
-        .from('genres')
-        .insert([{ name: newGenre }]);
-
-      if (error) throw error;
-      toast.success('Genre added successfully');
-      setNewGenre('');
-      setOpenDialog(false);
-      fetchGenres();
+      if (response.ok) {
+        toast.success('Genre added successfully');
+        setNewGenre('');
+        setOpenDialog(false);
+        fetchGenres();
+      } else {
+        toast.error('Failed to add genre');
+      }
     } catch (error) {
       toast.error('Error adding genre');
       console.error(error);
@@ -69,17 +66,13 @@ export default function GenreManagement() {
   const handleDeleteGenre = async (id: string) => {
     if (!confirm('Delete this genre?')) return;
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from('genres')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Genre deleted successfully');
-      fetchGenres();
+      const response = await fetch(`/api/admin/genres/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        toast.success('Genre deleted successfully');
+        fetchGenres();
+      } else {
+        toast.error('Failed to delete genre');
+      }
     } catch (error) {
       toast.error('Error deleting genre');
     }
