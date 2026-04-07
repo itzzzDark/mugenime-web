@@ -1,28 +1,14 @@
 "use server";
 
 import { fetchAnime } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 import { AnimeDetail, SearchResult } from "@/lib/types";
-
-interface ApiSearchRawItem {
-  title: string;
-  poster: string;
-  status: string;
-  score: string;
-  animeId: string;
-  genreList: { title: string; genreId: string }[];
-}
-
-interface ApiSearchResponse {
-  animeList: ApiSearchRawItem[];
-}
 
 export async function getAnimeDetailAction(
   slug: string
 ): Promise<AnimeDetail | null> {
   try {
-    const data = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`, {
-      next: { revalidate: 86400 }, // Cache 24 jam (ISR)
-    });
+    const data = await fetchAnime<AnimeDetail>(`anime/anime/${slug}`);
     return data;
   } catch (error) {
     console.error(`Gagal fetch detail untuk ${slug}:`, error);
@@ -36,27 +22,42 @@ export async function searchAnimeAction(
   if (!keyword || keyword.trim().length < 3) return [];
 
   try {
-    // 1. Fetch data
-    // Karena lib/api.ts otomatis return json.data, maka tipe kembaliannya adalah { animeList: [...] }
-    const res = await fetchAnime<ApiSearchResponse>(
-      `anime/search/${encodeURIComponent(keyword)}`
-    );
+    const { data: anime } = await supabase
+      .from("anime")
+      .select("anime_id, title, poster, status, score")
+      .or(`title.ilike.%${keyword}%,japanese.ilike.%${keyword}%`)
+      .limit(20);
 
-    // 2. Cek apakah animeList ada dan berbentuk array
-    if (res && Array.isArray(res.animeList)) {
-      // 3. Lakukan Mapping dari format API ke format SearchResult (Frontend)
-      return res.animeList.map((item) => ({
-        title: item.title,
-        slug: item.animeId, // Mapping: animeId -> slug
-        poster: item.poster,
-        status: item.status,
-        rating: item.score, // Mapping: score -> rating
-        genres: item.genreList, // Mapping: genreList -> genres
-        url: `/anime/${item.animeId}`,
-      }));
-    }
+    if (!anime || anime.length === 0) return [];
 
-    return [];
+    const animeIds = anime.map((a) => a.id);
+
+    const { data: genreRelations } = await supabase
+      .from("anime_genres")
+      .select("anime_id, genres(genre_id, title)")
+      .in("anime_id", animeIds);
+
+    const genreMap = new Map<string, any[]>();
+    (genreRelations || []).forEach((rel: any) => {
+      if (!rel.genres) return;
+      if (!genreMap.has(rel.anime_id)) {
+        genreMap.set(rel.anime_id, []);
+      }
+      genreMap.get(rel.anime_id)!.push({
+        genreId: rel.genres.genre_id,
+        title: rel.genres.title,
+      });
+    });
+
+    return anime.map((item: any) => ({
+      title: item.title,
+      slug: item.anime_id,
+      poster: item.poster || "",
+      status: item.status || "Unknown",
+      rating: item.score || "N/A",
+      genres: genreMap.get(item.id) || [],
+      url: `/anime/${item.anime_id}`,
+    }));
   } catch (error) {
     console.error("Search Error:", error);
     return [];

@@ -104,8 +104,11 @@ pnpm install
 Buat file `.env.local` di root folder dan tambahkan konfigurasi berikut:
 
 ```env
-# Base URL
-NEXT_PUBLIC_API_BASE_URL=YOUR_API_BASE_URL_HERE
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+
+# Base URL (Optional)
 NEXT_PUBLIC_BASE_URL=YOUR_WEBSITE_BASE_URL_HERE
 ```
 
